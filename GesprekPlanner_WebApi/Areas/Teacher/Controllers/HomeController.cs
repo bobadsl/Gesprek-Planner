@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GesprekPlanner_WebApi.Teacher.Controllers
+namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
 {
+    [Area("Teacher")]
     public class HomeController : Controller
     {
         public IActionResult Index()

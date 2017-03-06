@@ -9,14 +9,14 @@ namespace GesprekPlanner_WebApi.Models.AccountViewModels
     public class LoginViewModel
     {
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [StringLength(40, ErrorMessage = "De gebruikersnaam mag maximaal 40 tekens lang zijn")]
+        public string Username { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
+        [Display(Name = "Gegevens onthouden?")]
         public bool RememberMe { get; set; }
     }
 }

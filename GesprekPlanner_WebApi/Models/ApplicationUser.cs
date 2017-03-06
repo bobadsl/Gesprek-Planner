@@ -9,6 +9,6 @@ namespace GesprekPlanner_WebApi.Models
     // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser
     {
-        public string GroupName { get; set; }
+        public int GroupId { get; set; }
     }
 }
