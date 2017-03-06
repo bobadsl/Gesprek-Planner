@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gesprek_Planner.iOS", "Gesp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gesprek_Planner.UWP", "Gesprek Planner\Gesprek_Planner.UWP\Gesprek_Planner.UWP.csproj", "{6869A3C3-6A2D-42D1-8F35-C729CD714BB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gesprek Planner WebApi", "Gesprek Planner WebApi\Gesprek Planner WebApi.csproj", "{1385B521-E5A0-4EE7-B646-57345FB74EE9}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Gesprek Planner\Gesprek_Planner\Gesprek_Planner.projitems*{008c97ee-1dc8-440c-889e-ae0d8fbe65c3}*SharedItemsImports = 4
@@ -111,30 +109,6 @@ Global
 		{6869A3C3-6A2D-42D1-8F35-C729CD714BB3}.Release|x86.ActiveCfg = Release|x86
 		{6869A3C3-6A2D-42D1-8F35-C729CD714BB3}.Release|x86.Build.0 = Release|x86
 		{6869A3C3-6A2D-42D1-8F35-C729CD714BB3}.Release|x86.Deploy.0 = Release|x86
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|ARM.Build.0 = Debug|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|x64.ActiveCfg = Debug|x64
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|x64.Build.0 = Debug|x64
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|x86.ActiveCfg = Debug|x86
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Debug|x86.Build.0 = Debug|x86
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|ARM.ActiveCfg = Release|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|ARM.Build.0 = Release|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|iPhone.Build.0 = Release|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|x64.ActiveCfg = Release|x64
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|x64.Build.0 = Release|x64
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|x86.ActiveCfg = Release|x86
-		{1385B521-E5A0-4EE7-B646-57345FB74EE9}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
