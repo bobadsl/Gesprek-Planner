@@ -35,10 +35,8 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0-msbuild3-final" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Home\" />
     <Folder Include="Areas\Admin\Views\Home\" />
-    <Folder Include="Areas\Api\Controllers\" />
     <Folder Include="Areas\Teacher\Models\" />
     <Folder Include="Areas\Teacher\Views\" />
   </ItemGroup>

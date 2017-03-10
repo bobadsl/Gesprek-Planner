@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using GesprekPlanner_WebApi.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace GesprekPlanner_WebApi
 {
@@ -61,7 +62,6 @@ namespace GesprekPlanner_WebApi
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

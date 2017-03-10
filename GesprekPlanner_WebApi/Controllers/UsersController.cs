@@ -62,6 +62,8 @@ namespace GesprekPlanner_WebApi.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+
         }
+        
     }
 }

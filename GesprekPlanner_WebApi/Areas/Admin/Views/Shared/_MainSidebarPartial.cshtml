@@ -1,8 +1,3 @@
-@using Microsoft.AspNetCore.Identity
-@using GesprekPlanner_WebApi.Models
-
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
 <!-- sidebar: style can be found in sidebar.less -->
 <section class="sidebar">
     <!-- Sidebar Menu -->
@@ -17,8 +12,32 @@
                 </span>
             </a>
             <ul class="treeview-menu">
-                <li><a asp-area="" asp-controller="Home" asp-action="Index">Gebruikers</a></li>
-                <li><a href="#">Nieuwe gebruiker</a></li>
+                <li><a asp-area="Admin" asp-controller="Users" asp-action="Index">Gebruikers</a></li>
+                <li><a asp-area="Admin" asp-controller="Users" asp-action="Register">Nieuwe gebruiker</a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-link"></i> <span>Groepen</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a asp-area="Admin"asp-controller="Groups" asp-action="Index">Groepen</a></li>
+                <li><a asp-area="Admin"asp-controller="Groups" asp-action="Create">>Cre&euml;er nieuwe groep</a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-link"></i> <span>Gesprekstypes</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a asp-area="Admin" asp-controller="ConversationType" asp-action="Index">Gesprekstypes</a></li>
+                <li><a asp-area="Admin" asp-controller="ConversationType" asp-action="Create">>Cre&euml;er nieuw gesprekstype</a></li>
             </ul>
         </li>
         <li><a href="#"><i class="fa fa-link"></i><span>Another Link</span></a></li>

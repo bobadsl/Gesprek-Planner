@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using GesprekPlanner_WebApi.Models;
 using GesprekPlanner_WebApi.Models.AccountViewModels;
 using GesprekPlanner_WebApi.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GesprekPlanner_WebApi.Controllers
 {
@@ -98,6 +99,7 @@ namespace GesprekPlanner_WebApi.Controllers
         [AllowAnonymous]
         public IActionResult Register(string returnUrl = null)
         {
+            return RedirectToLocal("/");
             if (_userManager.FindByIdAsync("1").Result == null)
             {
                 ViewData["ReturnUrl"] = returnUrl;

@@ -1,0 +1,29 @@
+@model GesprekPlanner_WebApi.Models.ApplicationUserGroup
+
+@{
+    ViewData["Title"] = "Groep Verwijderen";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Verwijderen</h2>
+
+<h3>Weet je zeker dat je deze groep wil verwijderen?</h3>
+<div>
+    <h4>Groep</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.GroupName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.GroupName)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <div class="form-actions no-color">
+            <input type="submit" value="Verwijderen" class="btn btn-default" /> |
+            <a asp-action="Index">Terug naar de lijst/a>
+        </div>
+    </form>
+</div>

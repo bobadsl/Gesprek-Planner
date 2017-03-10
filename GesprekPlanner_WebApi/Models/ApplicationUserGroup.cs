@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GesprekPlanner_WebApi.Models
 {
     public class ApplicationUserGroup
     {
+        [Required]
         public int ApplicationUserGroupId { get; set; }
+        [Required]
+        [Display(Name = "Groep")]
+        [StringLength(30, ErrorMessage = "De {0} moet minimaal {2} en maximaal {1} characters lang zijn", MinimumLength = 3)]
         public string GroupName { get; set; }
     }
 }

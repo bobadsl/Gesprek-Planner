@@ -1,0 +1,31 @@
+@model GesprekPlanner_WebApi.Models.ConversationType
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Gesprekstype</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ConversationName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ConversationName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ConversationDuration)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ConversationDuration) minuten
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Aanpassen</a> |
+    <a asp-action="Index">Terug naar de lijst</a>
+</div>
