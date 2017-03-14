@@ -16,7 +16,7 @@ namespace GesprekPlanner_WebApi.Services
         {
             var context = serviceProvider.GetService<ApplicationDbContext>();
 
-            string[] roles = {"Administrator", "Teacher" };
+            string[] roles = {"Owner", "Administrator", "Leraar" };
 
             var roleStore = new RoleStore<IdentityRole>(context);
             foreach (string role in roles)

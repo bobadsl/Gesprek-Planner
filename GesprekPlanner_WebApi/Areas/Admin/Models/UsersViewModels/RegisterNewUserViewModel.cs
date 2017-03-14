@@ -32,6 +32,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.UsersViewModels
         public IEnumerable<SelectListItem> Groups { get; set; }
 
         [Required]
+        [Display(Name="Functie")]
         public string RoleName { get; set; }
         public IEnumerable<SelectListItem> Roles { get; set; }
 
