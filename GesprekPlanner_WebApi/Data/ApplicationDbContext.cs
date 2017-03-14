@@ -17,6 +17,7 @@ namespace GesprekPlanner_WebApi.Data
         public ApplicationDbContext() { }
         public DbSet<ApplicationUserGroup> ApplicationUserGroups { get; set; }
         public DbSet<ConversationType> ConversationTypes { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

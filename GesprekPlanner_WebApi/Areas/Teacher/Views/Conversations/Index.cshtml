@@ -1,0 +1,58 @@
+@model IEnumerable<GesprekPlanner_WebApi.Models.Conversation>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Teacher/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div id="calendar"></div>
+
+
+@section Scripts {
+    <script src="~/js/calendar.js"></script>
+    <link rel='stylesheet' href='~/lib/fullcalendar/dist/fullcalendar.css'/>
+    <script src='~/lib/moment/moment.js'></script>
+    <script src='~/lib/moment/locale/nl.js'></script>
+    <script src='~/lib/fullcalendar/dist/fullcalendar.js'></script>
+    <script src="~/lib/signalr/jquery.signalR.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        var hubConnection;
+        moment.updateLocale("nl");
+
+        $(document).ready(function() {
+            // page is now ready, initialize the calendar...
+
+            $("#calendar").fullCalendar({
+                weekends: false,
+                dayClick: function(date) {
+                    console.log(date.format());
+                    if (confirm("Wil je op " + date.locale("nl").format("LL") + " gesprekken plannen?")) {
+                        hubConnection.server.RedirectTo(date.format());
+                    }
+                }
+            });
+        });
+        $(function() {
+            hubConnection = $.connection.test;
+
+            hubConnection.client.SendServerMessage = function(message) { alert(message) };
+            hubConnection.on('Send',
+                function(message) {
+                    alert(message);
+                });
+            // Start the connection.
+            $.connection.hub.logging = true;
+            $.connection.hub.start()
+                .done(function() {
+                    console.log('Now connected, connection ID=' + $.connection.hub.id);
+                })
+                .fail(function() { alert('Could not Connect!'); });
+        });
+    </script>
+}

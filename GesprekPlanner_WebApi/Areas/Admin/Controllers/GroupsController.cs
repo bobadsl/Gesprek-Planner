@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Administrator")]
     public class GroupsController : Controller
     {
         private readonly ApplicationDbContext _context;

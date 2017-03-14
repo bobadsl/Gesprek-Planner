@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
-
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     [Area("Admin")]
     public class HomeController : Controller
     {

@@ -50,6 +50,11 @@ namespace GesprekPlanner_WebApi
 
             services.AddMvc();
 
+            services.AddSignalR(options =>
+            {
+                options.Hubs.EnableDetailedErrors = true;
+            });
+
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
@@ -86,6 +91,7 @@ namespace GesprekPlanner_WebApi
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
+            app.UseSignalR();
 
             app.UseMvc(routes =>
             {
@@ -96,6 +102,7 @@ namespace GesprekPlanner_WebApi
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            InitializeUsersAndRoles.Initialize(app.ApplicationServices);
         }
     }
 }

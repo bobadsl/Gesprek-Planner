@@ -18,8 +18,8 @@ using Remotion.Linq.Clauses;
 
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
-    [Authorize]
     [Area("Admin")]
+    [Authorize(Roles = "Administrator")]
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -55,6 +55,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             if (groups.Count == 0) return RedirectToAction("Create", "Groups");
             var model = new RegisterNewUserViewModel();
             model.Groups = new SelectList(groups, "ApplicationUserGroupId", "GroupName");
+            model.Roles = new SelectList(_dbContext.Roles.ToList(), "Name");
             return View(model);
         }
 
@@ -67,12 +68,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 var result = _userManager.CreateAsync(user, model.Password).Result;
                 if (result.Succeeded)
                 {
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action(nameof(ConfirmEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
+                    _userManager.AddToRoleAsync(user, model.RoleName).GetAwaiter().GetResult();
                 }
                 return RedirectToAction("Index");
             }

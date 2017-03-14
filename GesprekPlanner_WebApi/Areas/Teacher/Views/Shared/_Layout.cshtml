@@ -203,15 +203,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </h1>
                 <ol class="breadcrumb">
                     <li class="active"><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
-                    @*@if (ViewContext.RouteData.Values["controller"].ToString() != "Home")
-                    {
-                        @:> @Html.ActionLink(ViewContext.RouteData.Values["controller"].ToString(), "Index", ViewContext.RouteData.Values["controller"].ToString())
-                    }
-                    @if (ViewContext.RouteData.Values["action"].ToString() != "Index")
-                    {
-                        @:> @Html.ActionLink(ViewContext.RouteData.Values["action"].ToString(), ViewContext.RouteData.Values["action"].ToString(), ViewContext.RouteData.Values["controller"].ToString())
-                    }*@
-                    
                 </ol>
             </section>
 

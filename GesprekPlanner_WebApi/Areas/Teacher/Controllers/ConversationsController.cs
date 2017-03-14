@@ -9,89 +9,90 @@ using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
+namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Roles = "Administrator")]
-    public class ConversationTypeController : Controller
+    [Authorize(Roles = "Administrator,Teacher")]
+    [Area("Teacher")]
+    public class ConversationsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ConversationTypeController(ApplicationDbContext context)
+        public ConversationsController(ApplicationDbContext context)
         {
             _context = context;    
         }
 
-        // GET: Admin/ConversationType
+        // GET: Teacher/Conversations
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ConversationTypes.ToListAsync());
+            return View(await _context.Conversations.ToListAsync());
         }
 
-        // GET: Admin/ConversationType/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Teacher/Conversations/Details/5
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var conversationType = await _context.ConversationTypes
+            var conversation = await _context.Conversations
                 .SingleOrDefaultAsync(m => m.Id == id);
-            if (conversationType == null)
+            if (conversation == null)
             {
                 return NotFound();
             }
 
-            return View(conversationType);
+            return View(conversation);
         }
 
-        // GET: Admin/ConversationType/Create
+        // GET: Teacher/Conversations/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Admin/ConversationType/Create
+        // POST: Teacher/Conversations/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ConversationName,ConversationDuration")] ConversationType conversationType)
+        public async Task<IActionResult> Create([Bind("Id,DateTime,IsChosen")] Conversation conversation)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(conversationType);
+                conversation.Id = Guid.NewGuid();
+                _context.Add(conversation);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(conversationType);
+            return View(conversation);
         }
 
-        // GET: Admin/ConversationType/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Teacher/Conversations/Edit/5
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var conversationType = await _context.ConversationTypes.SingleOrDefaultAsync(m => m.Id == id);
-            if (conversationType == null)
+            var conversation = await _context.Conversations.SingleOrDefaultAsync(m => m.Id == id);
+            if (conversation == null)
             {
                 return NotFound();
             }
-            return View(conversationType);
+            return View(conversation);
         }
 
-        // POST: Admin/ConversationType/Edit/5
+        // POST: Teacher/Conversations/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ConversationName,ConversationDuration")] ConversationType conversationType)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,DateTime,IsChosen")] Conversation conversation)
         {
-            if (id != conversationType.Id)
+            if (id != conversation.Id)
             {
                 return NotFound();
             }
@@ -100,12 +101,12 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(conversationType);
+                    _context.Update(conversation);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ConversationTypeExists(conversationType.Id))
+                    if (!ConversationExists(conversation.Id))
                     {
                         return NotFound();
                     }
@@ -116,41 +117,41 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            return View(conversationType);
+            return View(conversation);
         }
 
-        // GET: Admin/ConversationType/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Teacher/Conversations/Delete/5
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var conversationType = await _context.ConversationTypes
+            var conversation = await _context.Conversations
                 .SingleOrDefaultAsync(m => m.Id == id);
-            if (conversationType == null)
+            if (conversation == null)
             {
                 return NotFound();
             }
 
-            return View(conversationType);
+            return View(conversation);
         }
 
-        // POST: Admin/ConversationType/Delete/5
+        // POST: Teacher/Conversations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var conversationType = await _context.ConversationTypes.SingleOrDefaultAsync(m => m.Id == id);
-            _context.ConversationTypes.Remove(conversationType);
+            var conversation = await _context.Conversations.SingleOrDefaultAsync(m => m.Id == id);
+            _context.Conversations.Remove(conversation);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
-        private bool ConversationTypeExists(int id)
+        private bool ConversationExists(Guid id)
         {
-            return _context.ConversationTypes.Any(e => e.Id == id);
+            return _context.Conversations.Any(e => e.Id == id);
         }
     }
 }
