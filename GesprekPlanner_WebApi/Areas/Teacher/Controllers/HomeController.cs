@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
 {
     [Area("Teacher")]
-    [Authorize(Roles = "Administrator,Teacher")]
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()

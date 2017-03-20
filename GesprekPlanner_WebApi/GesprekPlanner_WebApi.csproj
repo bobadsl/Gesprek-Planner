@@ -13,6 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <None Remove="Properties\PublishProfiles\FolderProfile.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="wwwroot\js\calendar.js" />
     <Content Include="wwwroot\js\jquery-validation-nl-localization.js" />
     <Content Include="wwwroot\js\messages_nl.js" />
@@ -46,7 +51,8 @@
     <Folder Include="Areas\Admin\Views\Home\" />
     <Folder Include="Areas\Admin\Views\Home\" />
     <Folder Include="Areas\NewFolder\" />
-    <Folder Include="Areas\Teacher\Models\" />
+    <Folder Include="Models\FakerViewModels\" />
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
 </Project>

@@ -19,7 +19,7 @@ using Remotion.Linq.Clauses;
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Eigenaar, Schooladmin")]
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -28,7 +28,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 
         public UsersController(ApplicationDbContext dbContect,
           UserManager<ApplicationUser> userManager,
-          SignInManager<ApplicationUser> signInManager )
+          SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _dbContext = dbContect;
@@ -37,14 +37,14 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         public IActionResult Index()
         {
             var query = from u in _dbContext.Users
-                select u;
+                        select u;
             var users = query.AsEnumerable().Select(item => new MinimalUser
-                {
-                    Id = item.Id,
-                    UserName = item.UserName,
-                    Email = item.Email,
-                    GroupId = item.GroupId
-                }).ToList();
+            {
+                Id = item.Id,
+                UserName = item.UserName,
+                Email = item.Email,
+                Group = item.Group
+            }).ToList();
             return View(users);
         }
 
@@ -54,8 +54,8 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             var groups = _dbContext.ApplicationUserGroups.ToList();
             if (groups.Count == 0) return RedirectToAction("Create", "Groups");
             var model = new RegisterNewUserViewModel();
-            model.Groups = new SelectList(groups, "ApplicationUserGroupId", "GroupName");
             model.Roles = new SelectList(_dbContext.Roles.ToList(), "Name");
+            model.Groups = JsonConvert.SerializeObject(groups.Select(g => g.GroupName).ToList());
             return View(model);
         }
 
@@ -64,7 +64,14 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Username, Email = model.Email, GroupId = model.GroupId};
+                ApplicationUser user;
+                if (!_dbContext.ApplicationUserGroups.Any(g => g.GroupName == model.Group))
+                {
+                    var AddedGroup = _dbContext.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = model.Group });
+                    user = new ApplicationUser { UserName = model.Username, Email = model.Email, Group = AddedGroup.Entity };
+                    _dbContext.SaveChanges();
+                }
+                user = new ApplicationUser { UserName = model.Username, Email = model.Email, Group = _dbContext.ApplicationUserGroups.First(g => g.GroupName == model.Group) };
                 var result = _userManager.CreateAsync(user, model.Password).Result;
                 if (result.Succeeded)
                 {
@@ -72,6 +79,9 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 }
                 return RedirectToAction("Index");
             }
+            var groups = _dbContext.ApplicationUserGroups.ToList();
+            model.Roles = new SelectList(_dbContext.Roles.ToList(), "Name");
+            model.Groups = JsonConvert.SerializeObject(groups.Select(g => g.GroupName).ToList());
             return View(model);
         }
 
@@ -84,7 +94,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 Id = item.Id,
                 UserName = item.UserName,
                 Email = item.Email,
-                GroupId = item.GroupId
+                Group = item.Group
             }).First(item => item.Id == id);
 
             var groups = _dbContext.ApplicationUserGroups.ToList();

@@ -12,20 +12,20 @@ using Microsoft.AspNetCore.Authorization;
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Eigenaar, Schooladmin")]
     public class GroupsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
         public GroupsController(ApplicationDbContext context)
         {
-            _context = context;    
+            _context = context;
         }
 
         // GET: Admin/Groups
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ApplicationUserGroups.ToListAsync());
+            return View(await _context.ApplicationUserGroups.OrderBy(g => g.GroupName).ToListAsync());
         }
 
         // GET: Admin/Groups/Details/5
@@ -111,7 +111,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                     }
                     else
                     {
-                        ViewBag["Error"] = "Er is een onbekende fout opgetreden.";
+                        ViewData["Error"] = "Er is een onbekende fout opgetreden.";
                         return View("Error");
                     }
                 }
@@ -143,10 +143,10 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var applicationUserGroup = await _context.ApplicationUserGroups.SingleOrDefaultAsync(m => m.ApplicationUserGroupId == id);
-            if (_context.Users.Any(u => u.GroupId == id))
+            var applicationUserGroup = _context.ApplicationUserGroups.SingleOrDefault(m => m.ApplicationUserGroupId == id);
+            if (_context.Users.Any(u => u.Group == applicationUserGroup))
             {
-                ViewBag["Error"] = "Kan deze groep niet verwijderen. Er bestaat al een gebruiker met deze groep";
+                ViewData["Error"] = "Kan deze groep niet verwijderen. Er bestaat al een gebruiker met deze groep";
                 return View("Error");
             }
             _context.ApplicationUserGroups.Remove(applicationUserGroup);

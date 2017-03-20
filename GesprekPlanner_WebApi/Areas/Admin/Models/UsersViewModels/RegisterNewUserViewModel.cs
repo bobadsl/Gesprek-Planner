@@ -27,9 +27,10 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.UsersViewModels
         public string Password { get; set; }
         [Required]
         [Display(Name = "Groep")]
-        public int GroupId { get; set; }
+        public string Group { get; set; }
 
-        public IEnumerable<SelectListItem> Groups { get; set; }
+        public string Groups { get; set; } // This is a Json string
+
 
         [Required]
         [Display(Name="Functie")]

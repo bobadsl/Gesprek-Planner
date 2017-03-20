@@ -3,8 +3,9 @@
 }
 
 <h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">Er is een error opgetreden tijdens het verwerken van uw verzoek.</h2>
-@if (ViewBag["error"] != null)
+<h2 class="text-danger">Er is een fout opgetreden tijdens het verwerken van uw verzoek.</h2>
+<br/>
+@if (ViewData["error"] != null)
 {
-    <h3 class="text-danger">Error: @ViewBag["Error"]</h3>
+    <h3 class="text-danger">@ViewData["Error"]</h3>
 }

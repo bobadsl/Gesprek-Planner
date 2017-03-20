@@ -102,7 +102,7 @@ namespace GesprekPlanner_WebApi
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            InitializeUsersAndRoles.Initialize(app.ApplicationServices);
+            SeedDatabase.Initialize(app.ApplicationServices);
         }
     }
 }

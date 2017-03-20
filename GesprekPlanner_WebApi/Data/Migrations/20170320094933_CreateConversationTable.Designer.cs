@@ -8,8 +8,8 @@ using GesprekPlanner_WebApi.Data;
 namespace GesprekPlanner_WebApi.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170310065535_CreateConversationTypeTable")]
-    partial class CreateConversationTypeTable
+    [Migration("20170320094933_CreateConversationTable")]
+    partial class CreateConversationTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,7 +31,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<int>("GroupId");
+                    b.Property<int?>("GroupApplicationUserGroupId");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -58,6 +58,8 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GroupApplicationUserGroupId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
 
@@ -80,6 +82,28 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                     b.HasKey("ApplicationUserGroupId");
 
                     b.ToTable("ApplicationUserGroups");
+                });
+
+            modelBuilder.Entity("GesprekPlanner_WebApi.Models.Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ConversationTypeId");
+
+                    b.Property<DateTime>("DateTime");
+
+                    b.Property<int?>("GroupApplicationUserGroupId");
+
+                    b.Property<bool>("IsChosen");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationTypeId");
+
+                    b.HasIndex("GroupApplicationUserGroupId");
+
+                    b.ToTable("Conversations");
                 });
 
             modelBuilder.Entity("GesprekPlanner_WebApi.Models.ConversationType", b =>
@@ -203,6 +227,24 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("GesprekPlanner_WebApi.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupApplicationUserGroupId");
+                });
+
+            modelBuilder.Entity("GesprekPlanner_WebApi.Models.Conversation", b =>
+                {
+                    b.HasOne("GesprekPlanner_WebApi.Models.ConversationType", "ConversationType")
+                        .WithMany()
+                        .HasForeignKey("ConversationTypeId");
+
+                    b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupApplicationUserGroupId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

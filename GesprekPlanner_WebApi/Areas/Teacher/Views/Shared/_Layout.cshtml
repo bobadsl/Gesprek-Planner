@@ -21,6 +21,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css">
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+
+    <link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.css" />
     <!-- Theme style -->
     <link rel="stylesheet" href="~/lib/AdminLTE/dist/css/AdminLTE.min.css">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -169,6 +171,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <p>
                                         @UserManager.GetUserName(User)
                                     </p>
+                                    @if (User.IsInRole("Eigenaar"))
+                                    {
+                                        <form asp-area="" asp-controller="Faker" asp-action="ChangeTeacher">
+                                            <input type="hidden" name="returnUrl" value="@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}")" />
+                                            <select name="group" asp-items="@Model.Groups" class="selectpicker" title="Kies een group"></select>
+                                            <input type="submit" value="Verander groep"/>
+                                        </form>
+                                    }
                                 </li>
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
@@ -306,6 +316,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="~/lib/AdminLTE/plugins/jQuery/jquery-2.2.3.min.js"></script>
     <!-- Bootstrap 3.3.6 -->
     <script src="~/lib/AdminLTE/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.js"></script>
     @RenderSection("Scripts", required: false)
     <!-- AdminLTE App -->
     <script src="~/lib/AdminLTE/dist/js/app.min.js"></script>

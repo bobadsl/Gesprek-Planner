@@ -8,8 +8,8 @@ using GesprekPlanner_WebApi.Data;
 namespace GesprekPlanner_WebApi.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170306122956_ApplicationUserGroup_ApplicationUserGroupId")]
-    partial class ApplicationUserGroup_ApplicationUserGroupId
+    [Migration("20170320095018_CreateConversationPlanDateTable")]
+    partial class CreateConversationPlanDateTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,7 +31,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<int>("GroupId");
+                    b.Property<int?>("GroupApplicationUserGroupId");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -58,6 +58,8 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GroupApplicationUserGroupId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
 
@@ -73,11 +75,70 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                     b.Property<int>("ApplicationUserGroupId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("GroupName");
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.HasKey("ApplicationUserGroupId");
 
                     b.ToTable("ApplicationUserGroups");
+                });
+
+            modelBuilder.Entity("GesprekPlanner_WebApi.Models.Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ConversationTypeId");
+
+                    b.Property<DateTime>("DateTime");
+
+                    b.Property<int?>("GroupApplicationUserGroupId");
+
+                    b.Property<bool>("IsChosen");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationTypeId");
+
+                    b.HasIndex("GroupApplicationUserGroupId");
+
+                    b.ToTable("Conversations");
+                });
+
+            modelBuilder.Entity("GesprekPlanner_WebApi.Models.ConversationPlanDate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("EndDate");
+
+                    b.Property<int?>("GroupApplicationUserGroupId")
+                        .IsRequired();
+
+                    b.Property<DateTime>("StartDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupApplicationUserGroupId");
+
+                    b.ToTable("ConversationPlanDates");
+                });
+
+            modelBuilder.Entity("GesprekPlanner_WebApi.Models.ConversationType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ConversationDuration");
+
+                    b.Property<string>("ConversationName")
+                        .IsRequired()
+                        .HasMaxLength(30);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConversationTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -185,6 +246,32 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("GesprekPlanner_WebApi.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupApplicationUserGroupId");
+                });
+
+            modelBuilder.Entity("GesprekPlanner_WebApi.Models.Conversation", b =>
+                {
+                    b.HasOne("GesprekPlanner_WebApi.Models.ConversationType", "ConversationType")
+                        .WithMany()
+                        .HasForeignKey("ConversationTypeId");
+
+                    b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupApplicationUserGroupId");
+                });
+
+            modelBuilder.Entity("GesprekPlanner_WebApi.Models.ConversationPlanDate", b =>
+                {
+                    b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupApplicationUserGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

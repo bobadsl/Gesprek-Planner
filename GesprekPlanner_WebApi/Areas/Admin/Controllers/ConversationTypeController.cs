@@ -12,14 +12,14 @@ using Microsoft.AspNetCore.Authorization;
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Eigenaar, Schooladmin")]
     public class ConversationTypeController : Controller
     {
         private readonly ApplicationDbContext _context;
 
         public ConversationTypeController(ApplicationDbContext context)
         {
-            _context = context;    
+            _context = context;
         }
 
         // GET: Admin/ConversationType

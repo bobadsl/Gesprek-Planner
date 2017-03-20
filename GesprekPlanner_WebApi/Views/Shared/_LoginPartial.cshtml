@@ -6,14 +6,14 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-    if (User.IsInRole("Administrator"))
+    if (User.IsInRole("Eigenaar") || User.IsInRole("Schooladmin"))
     {
         <ul class="nav navbar-nav">
             <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin gebied</a></li>
             <li><a asp-area="Teacher" asp-controller="Home" asp-action="Index">Leraar gebied</a></li>
         </ul>
     }
-    else if (User.IsInRole("Teacher"))
+    else if (User.IsInRole("Leraar"))
     {
         <ul class="nav navbar-nav">
             <li><a asp-area="Teacher" asp-controller="Home" asp-action="Index">Leraar gebied</a></li>

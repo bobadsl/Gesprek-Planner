@@ -2,24 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GesprekPlanner_WebApi.Areas.Teacher.Models.ConversationViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
 {
-    [Authorize(Roles = "Administrator,Teacher")]
     [Area("Teacher")]
+    [Authorize]
     public class ConversationsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ConversationsController(ApplicationDbContext context)
+        public ConversationsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            _context = context;    
+            _context = context;
+            _userManager = userManager;
+        }
+
+        private async Task<ApplicationUser> GetCurrentUser()
+        {
+            return await _userManager.GetUserAsync(HttpContext.User);
         }
 
         // GET: Teacher/Conversations
@@ -28,130 +37,59 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
             return View(await _context.Conversations.ToListAsync());
         }
 
-        // GET: Teacher/Conversations/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var conversation = await _context.Conversations
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (conversation == null)
-            {
-                return NotFound();
-            }
-
-            return View(conversation);
-        }
-
         // GET: Teacher/Conversations/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
-        }
-
-        // POST: Teacher/Conversations/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,DateTime,IsChosen")] Conversation conversation)
-        {
-            if (ModelState.IsValid)
+            if (!_context.ConversationPlanDates.Any())
             {
-                conversation.Id = Guid.NewGuid();
-                _context.Add(conversation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                ViewData["error"] =
+                    "De schooladministrator heeft nog geen gespreksplanning gemaakt.";
+                return View("Error");
             }
-            return View(conversation);
-        }
-
-        // GET: Teacher/Conversations/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
+            if (!_context.ConversationTypes.Any())
             {
-                return NotFound();
+                ViewData["error"] = "De schooladministrator heeft nog geen gesprekstypes aangemaakt.";
             }
-
-            var conversation = await _context.Conversations.SingleOrDefaultAsync(m => m.Id == id);
-            if (conversation == null)
+            var model = new CreateConversationViewModel();
+            model.PlannableDates = new List<SelectListItem>();
+            model.ConversationTypes = new List<SelectListItem>();
+            var conversationTypes = _context.ConversationTypes.ToList();
+            foreach (var conversationType in conversationTypes)
             {
-                return NotFound();
-            }
-            return View(conversation);
-        }
-
-        // POST: Teacher/Conversations/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,DateTime,IsChosen")] Conversation conversation)
-        {
-            if (id != conversation.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                model.ConversationTypes.Add(new SelectListItem
                 {
-                    _context.Update(conversation);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
+                    Value = conversationType.Id.ToString(),
+                    Text = $"{conversationType.ConversationName} ({conversationType.ConversationDuration} minuten)"
+
+                });
+            }
+
+            var tempUser = await GetCurrentUser();
+            var user = _context.Users.Include(u => u.Group).First(u => u.Id == tempUser.Id);
+            var planDates = await _context.ConversationPlanDates.Where(pd => pd.Group == user.Group).ToListAsync();
+            
+            var counter = 1;
+            foreach (var planDate in planDates)
+            {
+                var selectListGroup = new SelectListGroup{Name = $"Periode {counter}"};
+                var datesToLoop = (int)planDate.EndDate.Subtract(planDate.StartDate).TotalDays;
+                for (int i = 0; i <= datesToLoop; i++)
                 {
-                    if (!ConversationExists(conversation.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    var date = planDate.StartDate.AddDays(i);
+                    // Teachers don't work in the weekend
+                    if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday) continue;
+                    var selectListItem = new SelectListItem();
+
+                    selectListItem.Value = date.ToString("d");
+                    selectListItem.Text = date.ToString("dddd dd-MM-yyyy");
+                    selectListItem.Group = selectListGroup;
+                    
+                    model.PlannableDates.Add(selectListItem);
                 }
-                return RedirectToAction("Index");
+                counter++;
             }
-            return View(conversation);
+            return View(model);
         }
 
-        // GET: Teacher/Conversations/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var conversation = await _context.Conversations
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (conversation == null)
-            {
-                return NotFound();
-            }
-
-            return View(conversation);
-        }
-
-        // POST: Teacher/Conversations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var conversation = await _context.Conversations.SingleOrDefaultAsync(m => m.Id == id);
-            _context.Conversations.Remove(conversation);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
-        }
-
-        private bool ConversationExists(Guid id)
-        {
-            return _context.Conversations.Any(e => e.Id == id);
-        }
     }
 }

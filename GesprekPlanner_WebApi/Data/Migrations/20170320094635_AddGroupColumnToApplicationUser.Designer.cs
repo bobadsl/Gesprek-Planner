@@ -8,9 +8,10 @@ using GesprekPlanner_WebApi.Data;
 namespace GesprekPlanner_WebApi.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170320094635_AddGroupColumnToApplicationUser")]
+    partial class AddGroupColumnToApplicationUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.2")
@@ -81,63 +82,6 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                     b.HasKey("ApplicationUserGroupId");
 
                     b.ToTable("ApplicationUserGroups");
-                });
-
-            modelBuilder.Entity("GesprekPlanner_WebApi.Models.Conversation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("ConversationTypeId");
-
-                    b.Property<DateTime>("DateTime");
-
-                    b.Property<int?>("GroupApplicationUserGroupId");
-
-                    b.Property<bool>("IsChosen");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConversationTypeId");
-
-                    b.HasIndex("GroupApplicationUserGroupId");
-
-                    b.ToTable("Conversations");
-                });
-
-            modelBuilder.Entity("GesprekPlanner_WebApi.Models.ConversationPlanDate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("EndDate");
-
-                    b.Property<int?>("GroupApplicationUserGroupId")
-                        .IsRequired();
-
-                    b.Property<DateTime>("StartDate");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupApplicationUserGroupId");
-
-                    b.ToTable("ConversationPlanDates");
-                });
-
-            modelBuilder.Entity("GesprekPlanner_WebApi.Models.ConversationType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ConversationDuration");
-
-                    b.Property<string>("ConversationName")
-                        .IsRequired()
-                        .HasMaxLength(30);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ConversationTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -252,25 +196,6 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                     b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
                         .WithMany()
                         .HasForeignKey("GroupApplicationUserGroupId");
-                });
-
-            modelBuilder.Entity("GesprekPlanner_WebApi.Models.Conversation", b =>
-                {
-                    b.HasOne("GesprekPlanner_WebApi.Models.ConversationType", "ConversationType")
-                        .WithMany()
-                        .HasForeignKey("ConversationTypeId");
-
-                    b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupApplicationUserGroupId");
-                });
-
-            modelBuilder.Entity("GesprekPlanner_WebApi.Models.ConversationPlanDate", b =>
-                {
-                    b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupApplicationUserGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

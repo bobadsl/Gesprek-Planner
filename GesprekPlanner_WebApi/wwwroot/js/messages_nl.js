@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Translated default messages for the jQuery validation plugin.
  * Locale: NL (Dutch; Nederlands, Vlaams)
  */
@@ -31,4 +31,4 @@ $.validator.messages = {
     bankaccountNL: "Vul hier een geldig bankrekeningnummer in.",
     giroaccountNL: "Vul hier een geldig gironummer in.",
     bankorgiroaccountNL: "Vul hier een geldig bank- of gironummer in."
-});
+};

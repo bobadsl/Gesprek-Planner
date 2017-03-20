@@ -1,0 +1,56 @@
+@model GesprekPlanner_WebApi.Areas.Admin.Models.ConversationPlanDateViewModels.CreateConversationPlanDateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section Styles{
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.css" />
+}
+<h2>Create</h2>
+
+<form asp-action="Create">
+    <div class="form-horizontal">
+        <h4>ConversationPlanDate</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="StartDate" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="EndDate" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SelectedGroups" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="SelectedGroups" class="form-control selectpicker" multiple asp-items="@Model.Groups"></select>
+                <span asp-validation-for="SelectedGroups" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.js"></script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
+
