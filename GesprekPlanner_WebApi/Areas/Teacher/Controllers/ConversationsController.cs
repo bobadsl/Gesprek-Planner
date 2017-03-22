@@ -36,8 +36,9 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
         {
             return View(await _context.Conversations.ToListAsync());
         }
-
+        
         // GET: Teacher/Conversations/Create
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             if (!_context.ConversationPlanDates.Any())
@@ -63,6 +64,7 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
 
                 });
             }
+            model.ConversationTypes[0].Selected = true;
 
             var tempUser = await GetCurrentUser();
             var user = _context.Users.Include(u => u.Group).First(u => u.Id == tempUser.Id);
@@ -91,5 +93,53 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
             return View(model);
         }
 
+        // POST: /Teacher/Conversations/Create
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateConversationViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                return View("CreateSchedule",model);
+            }
+            
+            model.PlannableDates = new List<SelectListItem>();
+            model.ConversationTypes = new List<SelectListItem>();
+            var conversationTypes = _context.ConversationTypes.ToList();
+            foreach (var conversationType in conversationTypes)
+            {
+                model.ConversationTypes.Add(new SelectListItem
+                {
+                    Value = conversationType.Id.ToString(),
+                    Text = $"{conversationType.ConversationName} ({conversationType.ConversationDuration} minuten)"
+                });
+            }
+            model.ConversationTypes[0].Selected = true;
+
+            var tempUser = await GetCurrentUser();
+            var user = _context.Users.Include(u => u.Group).First(u => u.Id == tempUser.Id);
+            var planDates = await _context.ConversationPlanDates.Where(pd => pd.Group == user.Group).ToListAsync();
+
+            var counter = 1;
+            foreach (var planDate in planDates)
+            {
+                var selectListGroup = new SelectListGroup { Name = $"Periode {counter}" };
+                var datesToLoop = (int)planDate.EndDate.Subtract(planDate.StartDate).TotalDays;
+                for (int i = 0; i <= datesToLoop; i++)
+                {
+                    var date = planDate.StartDate.AddDays(i);
+                    // Teachers don't work in the weekend
+                    if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday) continue;
+                    var selectListItem = new SelectListItem();
+
+                    selectListItem.Value = date.ToString("d");
+                    selectListItem.Text = date.ToString("dddd dd-MM-yyyy");
+                    selectListItem.Group = selectListGroup;
+
+                    model.PlannableDates.Add(selectListItem);
+                }
+                counter++;
+            }
+            return View(model);
+        }
     }
 }

@@ -12,9 +12,9 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Models.ConversationViewModels
     {
         [Required]
         [Display(Name="Gespreks type")]
-        public ConversationType ConversationType { get; set; }
+        public int ConversationType { get; set; }
         [Required]
-        [Display(Name = "Datum")]
+        [Display(Name = "Datums")]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public List<DateTime> PlanOnDate { get; set; }
         public List<SelectListItem> PlannableDates { get; set; }

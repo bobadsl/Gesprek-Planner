@@ -1,0 +1,90 @@
+@model GesprekPlanner_WebApi.Areas.Teacher.Models.ConversationViewModels.CreateConversationViewModel
+@{
+    ViewData["Title"] = "CreateSchedule";
+    Layout = "~/Areas/Teacher/Views/Shared/_Layout.cshtml";
+    var counter = 1;
+}
+
+<h2>CreateSchedule</h2>
+
+<p id="signalrStatus" class="text-warning">Bezig met componenten laden</p>
+@foreach (var planDate in Model.PlanOnDate)
+{
+    string formid = $"form{counter}";
+   
+    <form class="planForm" id="@formid">
+        <div class="form-horizontal">
+            <input type="hidden" name="Date" value="@planDate"/>
+            <div class="form-group">
+                <label class="col-md-2 control-label">Plan gesprek voor: </label>
+                <div class="col-md-10">
+                    <label class="plandate control-label">@planDate.ToString("ddMMyyyy")</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">Start tijd:</label>
+                <div class="col-md-10">
+                    <input type="time" name="StartTime" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">Eind tijd:</label>
+                <div class="col-md-10">
+                    <input type="time" name="EndTime" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Plan tijden" class="btn btn-default"/>
+                </div>
+            </div>
+        </div>
+    </form>
+    counter++;
+}
+
+
+@section Scripts{
+   @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/lib/signalr/jquery.signalR.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script src="~/lib/moment/moment.js"></script>
+    <script type="text/javascript">
+        moment.locale("nl");
+        $(document).ready(function() {
+            $(".plandate").each(function() {
+                $(this).text(moment($(this).text(), "DDMMYYYY").format('LL'));
+            });
+        });
+        
+        $(function () {
+            var createSchedule = $.connection.Schedule;
+            
+            $(".planForm").submit(function (e) {
+                e.preventDefault();
+                $(this).validate();
+
+                var form = $("#" + $(this).attr("id"));
+
+                var o = {
+                    FormId: $(this).attr("id"),
+                    StartTime: $(form).find("input[name=StartTime]").val(),
+                    EndTime: $(form).find("input[name=EndTime]").val(),
+                    Date: $(form).find("input[name=Date]").val(),
+                    ConversationType: @Model.ConversationType
+                };
+                createSchedule.server.createSchedules(JSON.stringify(o));
+            });
+
+            $.connection.hub.start().done(function () {
+                $("#signalrStatus").text("Klaar met laden. U kunt gebruik maken van de pagina");
+                $("#signalrStatus").hide(2000);
+            }).fail(function () {
+                $("#signalrStatus").text("Er is iets mis gegaan met het laden van de componenten");
+                $("#signalrStatus")
+                    .append("<p class='text-warning'>Probeer de pagina opnieuw te laden.</p><p class='text-warning'>Meld het aan de admin als dit vaker voorkomt</p>");
+            });
+        });
+
+    </script>
+}
