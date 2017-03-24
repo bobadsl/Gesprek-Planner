@@ -1,3 +1,6 @@
 ﻿.text-v-center {
     vertical-align: middle;
 }
+.deleteSchedule {
+    cursor: pointer;
+}

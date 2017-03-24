@@ -1,0 +1,25 @@
+@model List<GesprekPlanner_WebApi.Areas.Teacher.Models.CreateSchedule>
+@{ int counter = 0;}
+<form asp-action="FinalizeSchedule" class="finalSchedule">
+    <div class="col-md-2">&nbsp;</div>
+    <div class="col-md-10">
+        <input type="hidden" name="[0].Date" value="@Model[0].Date"/>
+        @foreach (var schedule in @Model)
+        {
+            <div class="schedulebox">
+                <input type="hidden" class="formid" name="[@counter].FormId" value="@counter" />
+                <input type="hidden" class="starttime" name="[@counter].StartTime" value="@schedule.StartTime"/>
+                <input type="hidden" class="endtime" name="[@counter].EndTime" value="@schedule.EndTime"/>
+                <p>@schedule.StartTime t/m @schedule.EndTime <i class="fa fa-times red deleteSchedule"/>
+                </p>
+            </div>
+            counter++;
+        }
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Plan gesprekken" class="btn btn-default"/>
+            </div>
+        </div>
+    </div>
+    
+</form>

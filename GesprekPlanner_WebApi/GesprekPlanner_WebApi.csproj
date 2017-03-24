@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Content Include="wwwroot\js\calendar.js" />
-    <Content Include="wwwroot\js\jquery-validation-nl-localization.js" />
     <Content Include="wwwroot\js\messages_nl.js" />
     <Content Include="wwwroot\js\signalrfunctions.js" />
   </ItemGroup>

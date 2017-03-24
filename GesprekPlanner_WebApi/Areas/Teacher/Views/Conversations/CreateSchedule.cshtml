@@ -6,12 +6,10 @@
 }
 
 <h2>CreateSchedule</h2>
-
-<p id="signalrStatus" class="text-warning">Bezig met componenten laden</p>
 @foreach (var planDate in Model.PlanOnDate)
 {
     string formid = $"form{counter}";
-   
+    string formoutputid = formid + "output";
     <form class="planForm" id="@formid">
         <div class="form-horizontal">
             <input type="hidden" name="Date" value="@planDate"/>
@@ -40,49 +38,69 @@
             </div>
         </div>
     </form>
+    <div id="@formoutputid"></div>
     counter++;
 }
+<div id="output"></div>
 
 
 @section Scripts{
-   @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-    <script src="~/lib/signalr/jquery.signalR.js"></script>
-    <script src="~/signalr/hubs"></script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/lib/jquery-form/src/jquery.form.js"></script>
     <script src="~/lib/moment/moment.js"></script>
     <script type="text/javascript">
         moment.locale("nl");
         $(document).ready(function() {
             $(".plandate").each(function() {
-                $(this).text(moment($(this).text(), "DDMMYYYY").format('LL'));
+                $(this).text(moment($(this).text(), "DDMMYYYY").locale("nl").format('LL'));
             });
         });
-        
-        $(function () {
-            var createSchedule = $.connection.Schedule;
-            
-            $(".planForm").submit(function (e) {
+
+        $(document).on("submit", ".finalSchedule", function(e) {
+            e.preventDefault();
+            $(this).ajaxSubmit({
+                target: $(this)
+            });
+        });
+
+        $(document).on("click", ".deleteSchedule", function () {
+            var counter = 0;
+            var scheduleboxParent = $(this).parent().parent().parent();
+            console.log($(this).parent().parent().remove());
+            scheduleboxParent.find(".schedulebox").each(function() {
+                $(this).find(".formid").attr("name","["+counter+"].FormId");
+                $(this).find(".starttime").attr("name", "[" + counter + "].StartTime");
+                $(this).find(".endtime").attr("name", "[" + counter + "].EndTime");
+                counter++;
+            });
+        });
+
+        $(function() {
+
+            $(".planForm").submit(function(e) {
                 e.preventDefault();
                 $(this).validate();
 
                 var form = $("#" + $(this).attr("id"));
-
-                var o = {
-                    FormId: $(this).attr("id"),
-                    StartTime: $(form).find("input[name=StartTime]").val(),
-                    EndTime: $(form).find("input[name=EndTime]").val(),
-                    Date: $(form).find("input[name=Date]").val(),
-                    ConversationType: @Model.ConversationType
-                };
-                createSchedule.server.createSchedules(JSON.stringify(o));
-            });
-
-            $.connection.hub.start().done(function () {
-                $("#signalrStatus").text("Klaar met laden. U kunt gebruik maken van de pagina");
-                $("#signalrStatus").hide(2000);
-            }).fail(function () {
-                $("#signalrStatus").text("Er is iets mis gegaan met het laden van de componenten");
-                $("#signalrStatus")
-                    .append("<p class='text-warning'>Probeer de pagina opnieuw te laden.</p><p class='text-warning'>Meld het aan de admin als dit vaker voorkomt</p>");
+                var formidoutput = "#" + $(this).attr("id") + "output";
+                $.ajax({
+                    url: '@Url.Action("AjaxCreateSchedule")',
+                    data: JSON.stringify({
+                        FormId: $(this).attr("id"),
+                        StartTime: $(form).find("input[name=StartTime]").val(),
+                        EndTime: $(form).find("input[name=EndTime]").val(),
+                        Date: $(form).find("input[name=Date]").val(),
+                        ConversationType: @Model.ConversationType
+                    }),
+                    contentType: 'application/json',
+                    type: 'POST',
+                    dataType: 'html',
+                    success: function (data) {
+                        console.log(formidoutput);
+                        $(formidoutput).html(data);
+                    }
+                });
+                e.preventDefault();
             });
         });
 

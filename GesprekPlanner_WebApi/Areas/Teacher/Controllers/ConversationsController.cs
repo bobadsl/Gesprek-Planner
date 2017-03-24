@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using GesprekPlanner_WebApi.Areas.Teacher.Models;
 using GesprekPlanner_WebApi.Areas.Teacher.Models.ConversationViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +12,7 @@ using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 
 namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
 {
@@ -140,6 +143,47 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
                 counter++;
             }
             return View(model);
+        }
+
+        // POST: /Teacher/Conversations/AjaxCreateSchedule
+        [HttpPost]
+        public IActionResult AjaxCreateSchedule([FromBody]CreateSchedule createSchedule)
+        {
+            var startTime = TimeSpan.ParseExact(createSchedule.StartTime, @"hh\:mm", null);
+            var endTime = TimeSpan.ParseExact(createSchedule.EndTime, @"hh\:mm", null);
+            var conversationType = _context.ConversationTypes.First(ct => ct.Id == createSchedule.ConversationType);
+            var user = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            List<CreateSchedule> list = new List<CreateSchedule>();
+            while (true)
+            {
+                if (startTime.Equals(endTime) || startTime.Ticks > endTime.Ticks) break;
+                CreateSchedule schedule = new CreateSchedule();
+                schedule.Date = createSchedule.Date;
+                schedule.StartTime = startTime.ToString(@"hh\:mm");
+                startTime = startTime.Add(new TimeSpan(0, conversationType.ConversationDuration, 0));
+                schedule.EndTime = startTime.ToString(@"hh\:mm");
+                list.Add(schedule);
+            }
+            return PartialView("PartialAjaxGenerateSchedule", list);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FinalizeSchedule(List<CreateSchedule> schedules)
+        {
+            var date = schedules[0].Date;
+            var conversationType = schedules[0].ConversationType;
+            foreach (var schedule in schedules)
+            {
+                var conversation = new Conversation
+                {
+                    ConversationType=_context.ConversationTypes.First(ct => ct.Id == conversationType),
+                    Id = Guid.NewGuid(),
+                    Group = HttpContext.User.
+                }
+                _context.Conversations.Add();
+            }
+            return Json(schedules);
         }
     }
 }
