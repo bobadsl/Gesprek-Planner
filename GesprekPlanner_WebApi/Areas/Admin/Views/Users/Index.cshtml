@@ -7,7 +7,7 @@
 <h2>Here are ur users</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Register">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.GroupId)
+                @Html.DisplayNameFor(model => model.Group.GroupName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Email)
@@ -32,7 +32,7 @@
                     @Html.DisplayFor(modelItem => item.UserName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.GroupId)
+                    @Html.DisplayFor(modelItem => item.Group.GroupName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Email)

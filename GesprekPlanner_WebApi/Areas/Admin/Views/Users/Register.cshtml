@@ -7,6 +7,7 @@
 }
 @section Styles{
     <link rel="stylesheet" href="~/lib/jquery-ui/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.css" />
 }
 <form asp-controller="Users" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
     <h4>Registreer een nieuwe gebruiker</h4>
@@ -63,6 +64,7 @@
 </form>
 @section Scripts {
     <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.js"></script>
     <script>
       $( function() {
           var availableTags = @Html.Raw(Model.Groups);

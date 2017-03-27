@@ -173,16 +173,16 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
         {
             var date = schedules[0].Date;
             var conversationType = schedules[0].ConversationType;
-            foreach (var schedule in schedules)
-            {
-                var conversation = new Conversation
-                {
-                    ConversationType=_context.ConversationTypes.First(ct => ct.Id == conversationType),
-                    Id = Guid.NewGuid(),
-                    Group = HttpContext.User.
-                }
-                _context.Conversations.Add();
-            }
+//            foreach (var schedule in schedules)
+//            {
+//                var conversation = new Conversation
+//                {
+//                    ConversationType=_context.ConversationTypes.First(ct => ct.Id == conversationType),
+//                    Id = Guid.NewGuid(),
+//                    Group = HttpContext.User.
+//                }
+//                _context.Conversations.Add();
+//            }
             return Json(schedules);
         }
     }

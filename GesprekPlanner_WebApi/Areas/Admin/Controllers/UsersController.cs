@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Remotion.Linq.Clauses;
 
@@ -36,9 +37,8 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            var query = from u in _dbContext.Users
-                        select u;
-            var users = query.AsEnumerable().Select(item => new MinimalUser
+            
+            var users = _dbContext.Users.Include(u => u.Group).Select(item => new MinimalUser
             {
                 Id = item.Id,
                 UserName = item.UserName,
