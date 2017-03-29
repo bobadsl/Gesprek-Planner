@@ -32,7 +32,7 @@
         <div class="form-group">
             <label asp-for="SelectedGroups" class="col-md-2 control-label"></label>
             <div class="col-md-5">
-                <select asp-for="SelectedGroups" class="form-control selectpicker" multiple asp-items="@Model.Groups"></select>
+                <select asp-for="SelectedGroups" class="form-control selectpicker" data-title="Niks geselecteerd" multiple asp-items="@Model.Groups"></select>
                 <span asp-validation-for="SelectedGroups" class="text-danger"></span>
             </div>
         </div>

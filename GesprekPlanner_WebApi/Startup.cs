@@ -90,6 +90,9 @@ namespace GesprekPlanner_WebApi
 
             app.UseIdentity();
 
+
+            SeedDatabase.Initialize(app.ApplicationServices);
+
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
             app.UseSignalR();
 
@@ -102,7 +105,6 @@ namespace GesprekPlanner_WebApi
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            SeedDatabase.Initialize(app.ApplicationServices);
         }
     }
 }

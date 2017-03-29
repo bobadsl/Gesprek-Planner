@@ -27,6 +27,7 @@ namespace GesprekPlanner_WebApi.Models
         [Display(Name = "Groep")]
         public ApplicationUserGroup Group { get; set; }
 
+        public int PlanDateSet { get; set; }
 
         //public School School { get; set; }
     }

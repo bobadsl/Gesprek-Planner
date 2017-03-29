@@ -27,19 +27,23 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var plannedDates =
-                await _context.ConversationPlanDates.Include(p => p.Group).OrderBy(p => p.StartDate).ThenBy(p => p.EndDate).ThenBy(p => p.Group.GroupName).ToListAsync();
-           
+                await _context.ConversationPlanDates.Include(p => p.Group).OrderBy(p => p.StartDate).ThenBy(p => p.EndDate).ThenBy(p => p.Group.GroupName).GroupBy(p=>p.PlanDateSet).ToListAsync();
+            
             if (plannedDates != null)
             {
-                var plannedDateList = plannedDates.Select(plannedDate => new ConversationPlanDateViewModel
+                var datesList = new List<List<ConversationPlanDateViewModel>>();
+                foreach (var plannedDate in plannedDates)
                 {
-                    Id = plannedDate.Id,
-                    StartDate = plannedDate.StartDate.ToString("dd-MM-yyyy"),
-                    EndDate = plannedDate.EndDate.ToString("dd-MM-yyyy"),
-                    Group = plannedDate.Group.GroupName
-                }).ToList();
-
-                return View(plannedDateList);
+                    var tempList = plannedDate.Select(p => new ConversationPlanDateViewModel
+                    {
+                        Id = p.Id,
+                        StartDate = p.StartDate.ToString("dd-MM-yyyy"),
+                        EndDate = p.EndDate.ToString("dd-MM-yyyy"),
+                        Group = p.Group.GroupName
+                    }).ToList();
+                    datesList.Add(tempList);
+                }
+                return View(datesList);
             }
             return View();
         }

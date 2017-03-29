@@ -1,15 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GesprekPlanner_WebApi.Services
+namespace GesprekPlanner_WebApi.Data
 {
     public class SeedDatabase
     {
@@ -41,6 +39,7 @@ namespace GesprekPlanner_WebApi.Services
                 {
                     context.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = group });
                 }
+                context.SaveChanges();
             }
             if (!context.ConversationTypes.Any())
             {
@@ -52,8 +51,64 @@ namespace GesprekPlanner_WebApi.Services
                 context.ConversationTypes.Add(new ConversationType
                 {
                     ConversationDuration = 10,
-                    ConversationName = "Raportgesprek"
+                    ConversationName = "Rapportgesprek"
                 });
+            }
+            if (!context.ConversationPlanDates.Any())
+            {
+                DateTime[] startDates =
+                {
+                    new DateTime(2017, 3, 28),
+                    new DateTime(2017, 4, 2),
+                    new DateTime(2017, 4, 7),
+                    new DateTime(2017, 4, 20)
+                };
+                DateTime[] endDates =
+                {
+                    new DateTime(2017, 4, 8),
+                    new DateTime(2017, 4, 19),
+                    new DateTime(2017, 4, 29),
+                    new DateTime(2017, 5, 5)
+                };
+                var groupList = new List<List<ApplicationUserGroup>>();
+                groupList.Add(new List<ApplicationUserGroup>
+                {
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 4),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 7)
+                });
+                groupList.Add(new List<ApplicationUserGroup>
+                {
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 5),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 2),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 7)
+                });
+                groupList.Add(new List<ApplicationUserGroup>
+                {
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 15),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 13),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 9),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 4)
+                });
+                groupList.Add(new List<ApplicationUserGroup>
+                {
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 9),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 8)
+                });
+
+                for (int i = 0; i < startDates.Length; i++)
+                {
+                    foreach (var group in groupList[i])
+                    {
+                        var planDate = new ConversationPlanDate
+                        {
+                            StartDate = startDates[i],
+                            EndDate = endDates[i],
+                            Group = group,
+                            PlanDateSet = i
+                        };
+                        context.ConversationPlanDates.Add(planDate);
+                    }
+                }
             }
             if (!context.Users.Any())
             {

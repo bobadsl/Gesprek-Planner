@@ -117,6 +117,9 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.Property<DateTime>("StartDate");
 
+                    b.Property<int>("PlanDateSet")
+                        .IsRequired();
+
                     b.HasKey("Id");
 
                     b.HasIndex("GroupApplicationUserGroupId");

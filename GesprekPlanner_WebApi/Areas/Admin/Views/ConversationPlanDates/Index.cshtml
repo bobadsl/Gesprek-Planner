@@ -1,8 +1,9 @@
-@model IEnumerable<GesprekPlanner_WebApi.Areas.Admin.Models.ConversationPlanDateViewModels.ConversationPlanDateViewModel>
+@model List<List<GesprekPlanner_WebApi.Areas.Admin.Models.ConversationPlanDateViewModels.ConversationPlanDateViewModel>>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var counter = 0;
 }
 
 <h2>Index</h2>
@@ -12,37 +13,62 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Group)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model[0][0].StartDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0][0].EndDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0][0].Group)
+        </th>
+        <th></th>
+    </tr>
     </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Group)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
+
+    @foreach (var items in Model)
+    {
+        var groupCountString = items.Count + " groepen";
+        var tbodyClass = "planning" + counter;
+        <tbody >
+            <tr>
+                <th>
+                    @Html.DisplayFor(modelItem => items[0].StartDate)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => items[0].EndDate)
+                </th>
+                <th>
+                    @groupCountString
+                </th>
+                <td class="GroupToggler">
+                    <i class="fa fa-arrow-down"></i>
+                </td>
+            </tr>
+        @foreach (var item in items)
+        {
+            <tr class="GroupToggleThis" style="display:none">
+                <td></td>
+                <td></td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Group)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+        counter++;
+    }
 </table>
+
+
+@section Scripts{
+    <script type="text/javascript">
+        
+    </script>
+}

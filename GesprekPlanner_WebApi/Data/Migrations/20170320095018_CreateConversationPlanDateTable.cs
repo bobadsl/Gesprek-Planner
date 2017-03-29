@@ -17,7 +17,8 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     EndDate = table.Column<DateTime>(nullable: false),
                     GroupApplicationUserGroupId = table.Column<int>(nullable: false),
-                    StartDate = table.Column<DateTime>(nullable: false)
+                    StartDate = table.Column<DateTime>(nullable: false),
+                    PlanDateSet = table.Column<int>(nullable:false)
                 },
                 constraints: table =>
                 {
