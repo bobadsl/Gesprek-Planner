@@ -140,15 +140,23 @@ namespace GesprekPlanner_WebApi.Controllers
         //}
 
         //
-        // POST: /Account/Logout
-        [HttpGet]
+        // POST/GET: /Account/Logout
+        [HttpPost]
         public async Task<IActionResult> Logout()
         {
 
             await _signInManager.SignOutAsync();
-            //_logger.LogInformation(4, "User logged out.");
+            _logger.LogInformation(4, "User logged out.");
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
+//        [HttpGet]
+//        public async Task<IActionResult> Logout()
+//        {
+//
+//            await _signInManager.SignOutAsync();
+//            _logger.LogInformation(4, "User logged out.");
+//            return RedirectToAction(nameof(HomeController.Index), "Home");
+//        }
 
         // GET: /Account/ConfirmEmail
         [HttpGet]

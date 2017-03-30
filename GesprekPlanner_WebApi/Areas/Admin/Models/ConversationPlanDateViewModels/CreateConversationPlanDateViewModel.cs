@@ -27,6 +27,10 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.ConversationPlanDateViewModel
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            if (StartDate < DateTime.Now)
+            {
+                yield return new ValidationResult("Error: De begin datum kan niet lager zijn dan de huidige dag.");
+            }
             if (StartDate >= EndDate)
             {
                 yield return new ValidationResult("Error: Begin datum mag niet groter of gelijk zijn aan de eind datum.");

@@ -69,6 +69,10 @@
 
 @section Scripts{
     <script type="text/javascript">
-        
+        $(document).ready(function() {
+            $(document).on("click",".GroupToggler",function() {
+                console.log($(this).parent().parent());
+            })
+        })
     </script>
 }

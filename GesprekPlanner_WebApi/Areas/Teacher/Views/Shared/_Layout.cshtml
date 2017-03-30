@@ -149,14 +149,6 @@
                                     <p>
                                         @UserManager.GetUserName(User)
                                     </p>
-                                    @if (User.IsInRole("Eigenaar"))
-                                    {
-                                        <form asp-area="" asp-controller="Faker" asp-action="ChangeTeacher">
-                                            <input type="hidden" name="returnUrl" value="@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}")" />
-@*                                            <select name="group" asp-items=".Groups" class="selectpicker" title="Kies een group"></select>*@
-                                            <input type="submit" value="Verander groep"/>
-                                        </form>
-                                    }
                                 </li>
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
@@ -164,14 +156,14 @@
                                         <a asp-area="" asp-controller="Manage" asp-action="Index" class="btn btn-default btn-flat">Profiel</a>
                                     </div>
                                     <div class="pull-right">
-                                        <a asp-area="" asp-controller="Account" asp-action="Logout" class="btn btn-default btn-flat">Uitloggen</a>
+                                        
                                     </div>
                                 </li>
                             </ul>
                         </li>
                         <!-- Control Sidebar Toggle Button -->
-                        <li>
-                            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" id="TriggerLogout"><i class="fa fa-sign-out"></i> Uitloggen</a>
                         </li>
                     </ul>
                 </div>
@@ -210,83 +202,7 @@
             <!-- Default to the left -->
             <p>&copy; 2017 - Ods Meester Aafjes Meteren</p>
         </footer>
-
-        <!-- Control Sidebar -->
-@*        <aside class="control-sidebar control-sidebar-dark">*@
-@*            <!-- Create the tabs -->*@
-@*            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">*@
-@*                <li class="active"><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>*@
-@*                <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>*@
-@*            </ul>*@
-@*            <!-- Tab panes -->*@
-@*            <div class="tab-content">*@
-@*                <!-- Home tab content -->*@
-@*                <div class="tab-pane active" id="control-sidebar-home-tab">*@
-@*                    <h3 class="control-sidebar-heading">Recent Activity</h3>*@
-@*                    <ul class="control-sidebar-menu">*@
-@*                        <li>*@
-@*                            <a href="javascript:;">*@
-@*                                <i class="menu-icon fa fa-birthday-cake bg-red"></i>*@
-@**@
-@*                                <div class="menu-info">*@
-@*                                    <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>*@
-@**@
-@*                                    <p>Will be 23 on April 24th</p>*@
-@*                                </div>*@
-@*                            </a>*@
-@*                        </li>*@
-@*                    </ul>*@
-@*                    <!-- /.control-sidebar-menu -->*@
-@**@
-@*                    <h3 class="control-sidebar-heading">Tasks Progress</h3>*@
-@*                    <ul class="control-sidebar-menu">*@
-@*                        <li>*@
-@*                            <a href="javascript:;">*@
-@*                                <h4 class="control-sidebar-subheading">*@
-@*                                    Custom Template Design*@
-@*                                    <span class="pull-right-container">*@
-@*                                        <span class="label label-danger pull-right">70%</span>*@
-@*                                    </span>*@
-@*                                </h4>*@
-@**@
-@*                                <div class="progress progress-xxs">*@
-@*                                    <div class="progress-bar progress-bar-danger" style="width: 70%"></div>*@
-@*                                </div>*@
-@*                            </a>*@
-@*                        </li>*@
-@*                    </ul>*@
-@*                    <!-- /.control-sidebar-menu -->*@
-@**@
-@*                </div>*@
-@*                <!-- /.tab-pane -->*@
-@*                <!-- Stats tab content -->*@
-@*                <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>*@
-@*                <!-- /.tab-pane -->*@
-@*                <!-- Settings tab content -->*@
-@*                <div class="tab-pane" id="control-sidebar-settings-tab">*@
-@*                    <form method="post">*@
-@*                        <h3 class="control-sidebar-heading">General Settings</h3>*@
-@**@
-@*                        <div class="form-group">*@
-@*                            <label class="control-sidebar-subheading">*@
-@*                                Report panel usage*@
-@*                                <input type="checkbox" class="pull-right" checked>*@
-@*                            </label>*@
-@**@
-@*                            <p>*@
-@*                                Some information about this general settings option*@
-@*                            </p>*@
-@*                        </div>*@
-@*                        <!-- /.form-group -->*@
-@*                    </form>*@
-@*                </div>*@
-@*                <!-- /.tab-pane -->*@
-@*            </div>*@
-@*        </aside>*@
-@*        <!-- /.control-sidebar -->*@
-@*        <!-- Add the sidebar's background. This div must be placed*@
-@*             immediately after the control sidebar -->*@
-@*        <div class="control-sidebar-bg"></div>*@
+        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" style="display:none"></form>
     </div>
     <!-- ./wrapper -->
     <!-- REQUIRED JS SCRIPTS -->
@@ -298,7 +214,7 @@
     @RenderSection("Scripts", required: false)
     <!-- AdminLTE App -->
     <script src="~/lib/AdminLTE/dist/js/app.min.js"></script>
-
+    <script src="~/js/site.js"></script>
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
          Both of these plugins are recommended to enhance the
          user experience. Slimscroll is required when using the
