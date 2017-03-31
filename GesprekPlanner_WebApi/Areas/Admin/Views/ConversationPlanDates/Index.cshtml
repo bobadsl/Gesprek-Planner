@@ -14,16 +14,17 @@
 <table class="table">
     <thead>
     <tr>
-        <th>
+        <th class="col-md-2">
             @Html.DisplayNameFor(model => model[0][0].StartDate)
         </th>
-        <th>
+        <th class="col-md-2">
             @Html.DisplayNameFor(model => model[0][0].EndDate)
         </th>
-        <th>
+        <th class="col-md-2">
             @Html.DisplayNameFor(model => model[0][0].Group)
         </th>
-        <th></th>
+        <th class="col-md-2"></th>
+        <th class="col-md-2"></th>
     </tr>
     </thead>
 
@@ -31,7 +32,7 @@
     {
         var groupCountString = items.Count + " groepen";
         var tbodyClass = "planning" + counter;
-        <tbody >
+        <tbody>
             <tr>
                 <th>
                     @Html.DisplayFor(modelItem => items[0].StartDate)
@@ -42,9 +43,14 @@
                 <th>
                     @groupCountString
                 </th>
-                <td class="GroupToggler">
-                    <i class="fa fa-arrow-down"></i>
-                </td>
+                <th>
+                    <a asp-action="Edit" asp-route-id="@items[0].Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="items[0].Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@items[0].Id">Delete</a>
+                </th>
+                <th>
+                    <i class="fa fa-arrow-down GroupToggler"></i>
+                </th>
             </tr>
         @foreach (var item in items)
         {
@@ -54,25 +60,9 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Group)
                 </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
             </tr>
         }
         </tbody>
         counter++;
     }
 </table>
-
-
-@section Scripts{
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $(document).on("click",".GroupToggler",function() {
-                console.log($(this).parent().parent());
-            })
-        })
-    </script>
-}

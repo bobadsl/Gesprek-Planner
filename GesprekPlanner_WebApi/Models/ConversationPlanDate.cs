@@ -23,12 +23,6 @@ namespace GesprekPlanner_WebApi.Models
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
 
-        [Required]
-        [Display(Name = "Groep")]
-        public ApplicationUserGroup Group { get; set; }
-
-        public int PlanDateSet { get; set; }
-
         //public School School { get; set; }
     }
 }

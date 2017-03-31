@@ -97,16 +97,19 @@ namespace GesprekPlanner_WebApi.Data
 
                 for (int i = 0; i < startDates.Length; i++)
                 {
+                    var planDate = new ConversationPlanDate
+                    {
+                        StartDate = startDates[i],
+                        EndDate = endDates[i]
+                    };
+                    context.ConversationPlanDates.Add(planDate);
                     foreach (var group in groupList[i])
                     {
-                        var planDate = new ConversationPlanDate
+                        context.ConversationPlanDateClaims.Add(new ConversationPlanDateClaim
                         {
-                            StartDate = startDates[i],
-                            EndDate = endDates[i],
-                            Group = group,
-                            PlanDateSet = i
-                        };
-                        context.ConversationPlanDates.Add(planDate);
+                            ConversationPlanDate = planDate,
+                            Group = group
+                        });
                     }
                 }
             }

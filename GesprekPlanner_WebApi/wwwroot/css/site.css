@@ -4,7 +4,6 @@
 .deleteSchedule {
     cursor: pointer;
 }
-/*#TriggerLogout {*/
-/*    background-color: #3c8dbc;*/
-/*    border-color: #3c8dbc;*/
-/*} */
+.GroupToggler {
+    cursor: pointer;
+}

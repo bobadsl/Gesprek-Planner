@@ -19,6 +19,7 @@ namespace GesprekPlanner_WebApi.Data
         public DbSet<ConversationType> ConversationTypes { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
         public DbSet<ConversationPlanDate> ConversationPlanDates { get; set; }
+        public DbSet<ConversationPlanDateClaim> ConversationPlanDateClaims { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

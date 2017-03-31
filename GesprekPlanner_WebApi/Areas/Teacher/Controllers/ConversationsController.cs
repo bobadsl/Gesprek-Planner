@@ -71,16 +71,16 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
 
             var tempUser = await GetCurrentUser();
             var user = _context.Users.Include(u => u.Group).First(u => u.Id == tempUser.Id);
-            var planDates = await _context.ConversationPlanDates.Where(pd => pd.Group == user.Group).ToListAsync();
+            var planDates = await _context.ConversationPlanDateClaims.Include(pdc => pdc.Group).Include(pdc => pdc.ConversationPlanDate).Where(pdc => pdc.Group == user.Group).ToListAsync();
             
             var counter = 1;
             foreach (var planDate in planDates)
             {
                 var selectListGroup = new SelectListGroup{Name = $"Periode {counter}"};
-                var datesToLoop = (int)planDate.EndDate.Subtract(planDate.StartDate).TotalDays;
+                var datesToLoop = (int)planDate.ConversationPlanDate.EndDate.Subtract(planDate.ConversationPlanDate.StartDate).TotalDays;
                 for (int i = 0; i <= datesToLoop; i++)
                 {
-                    var date = planDate.StartDate.AddDays(i);
+                    var date = planDate.ConversationPlanDate.StartDate.AddDays(i);
                     // Teachers don't work in the weekend
                     if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday) continue;
                     var selectListItem = new SelectListItem();
@@ -120,16 +120,16 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
 
             var tempUser = await GetCurrentUser();
             var user = _context.Users.Include(u => u.Group).First(u => u.Id == tempUser.Id);
-            var planDates = await _context.ConversationPlanDates.Where(pd => pd.Group == user.Group).ToListAsync();
+            var planDates = await _context.ConversationPlanDateClaims.Include(pdc => pdc.Group).Include(pdc => pdc.ConversationPlanDate).Where(pdc => pdc.Group == user.Group).ToListAsync();
 
             var counter = 1;
             foreach (var planDate in planDates)
             {
                 var selectListGroup = new SelectListGroup { Name = $"Periode {counter}" };
-                var datesToLoop = (int)planDate.EndDate.Subtract(planDate.StartDate).TotalDays;
+                var datesToLoop = (int)planDate.ConversationPlanDate.EndDate.Subtract(planDate.ConversationPlanDate.StartDate).TotalDays;
                 for (int i = 0; i <= datesToLoop; i++)
                 {
-                    var date = planDate.StartDate.AddDays(i);
+                    var date = planDate.ConversationPlanDate.StartDate.AddDays(i);
                     // Teachers don't work in the weekend
                     if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday) continue;
                     var selectListItem = new SelectListItem();

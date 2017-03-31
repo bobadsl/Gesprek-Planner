@@ -7,30 +7,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GesprekPlanner_WebApi.Areas.Admin.Models.ConversationPlanDateViewModels
 {
-    public class CreateConversationPlanDateViewModel : IValidatableObject
+    public class EditConversationPlanDateViewModel : IValidatableObject
     {
-//        [Required]
-        [Display(Name = "Begin datum")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime StartDate { get; set; }
-//        [Required]
-        [Display(Name = "Eind datum")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime EndDate { get; set; }
         [Required]
-        [Display(Name ="Groepen(Meerdere mogelijk)")]
+        [Display(Name = "Groepen(Meerdere mogelijk)")]
         public List<int> SelectedGroups { get; set; }
+        [Required]
+        [Display(Name = "Begin Datum")]
+        public string StartDate { get; set; }
+        [Required]
+        [Display(Name = "Eind Datum")]
+        public string EndDate { get; set; }
         public IEnumerable<SelectListItem> Groups { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (StartDate < DateTime.Now)
+            if (DateTime.ParseExact(StartDate,"dd-mm-yyyy",null) < DateTime.Now)
             {
                 yield return new ValidationResult("Error: De begin datum kan niet lager zijn dan de huidige dag.");
             }
-            if (StartDate >= EndDate)
+            if (DateTime.ParseExact(StartDate, "dd-mm-yyyy", null) >= DateTime.ParseExact(EndDate, "dd-mm-yyyy", null))
             {
                 yield return new ValidationResult("Error: Begin datum mag niet groter of gelijk zijn aan de eind datum.");
             }
