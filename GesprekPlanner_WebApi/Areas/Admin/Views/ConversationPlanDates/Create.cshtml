@@ -52,5 +52,41 @@
     <script src="~/lib/jquery-ui/jquery-ui.js"></script>
     <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.js"></script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+<script type="text/javascript">
+        $(function () {
+            var dateFormat = "dd-mm-yy",
+                from = $("#StartDate")
+                    .datepicker({
+                        changeMonth: true,
+                        dateFormat: "dd-mm-yy",
+                        minDate: -0,
+                        showWeek: true,
+                        firstDay: 1
+                    })
+                    .on("change", function () {
+                        to.datepicker("option", "minDate", getDate(this));
+                    }),
+                to = $("#EndDate").datepicker({
+                    changeMonth: true,
+                    dateFormat: "dd-mm-yy",
+                    showWeek: true,
+                    firstDay: 1
+                })
+                    .on("change", function () {
+                        from.datepicker("option", "maxDate", getDate(this));
+                    });
+
+            function getDate(element) {
+                var date;
+                try {
+                    date = $.datepicker.parseDate(dateFormat, element.value);
+                } catch (error) {
+                    date = null;
+                }
+
+                return date;
+            }
+        });
+</script>
 }
 

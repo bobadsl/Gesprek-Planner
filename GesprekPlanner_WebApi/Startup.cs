@@ -27,6 +27,7 @@ namespace GesprekPlanner_WebApi
 
             if (env.IsDevelopment())
             {
+                IsDevelopment = true;
                 // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
                 builder.AddUserSecrets<Startup>();
             }
@@ -37,10 +38,12 @@ namespace GesprekPlanner_WebApi
 
         public IConfigurationRoot Configuration { get; }
 
+        public bool IsDevelopment { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+//            if (IsDevelopment) { }
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -103,7 +106,8 @@ namespace GesprekPlanner_WebApi
 
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller}/{action}/{id?}",
+                    defaults: new { controller = "Home", action = "Index" });
             });
         }
     }

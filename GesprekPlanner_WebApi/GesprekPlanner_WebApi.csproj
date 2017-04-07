@@ -10,6 +10,13 @@
 
   <PropertyGroup>
     <UserSecretsId>aspnet-GesprekPlanner_WebApi-7701dde1-5be2-4814-a2ad-9fa8b7318462</UserSecretsId>
+    <Authors>David Hijlkema</Authors>
+    <Product>GesprekPlanner</Product>
+    <Description>Gesprek planner gemaakt in opdracht van Stichting Fluvium voor het plannen van gesprekken op school</Description>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>

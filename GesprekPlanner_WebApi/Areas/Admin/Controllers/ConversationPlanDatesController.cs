@@ -73,8 +73,8 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             CreateConversationPlanDateViewModel model = new CreateConversationPlanDateViewModel()
             {
                 Groups = new SelectList(_context.ApplicationUserGroups.OrderBy(g => g.GroupName).ToList(), "ApplicationUserGroupId", "GroupName"),
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(1)
+                StartDate = DateTime.Now.ToString("dd-mm-yyyy"),
+                EndDate = DateTime.Now.AddDays(1).ToString("dd-mm-yyyy")
             };
             return View(model);
         }
@@ -90,8 +90,8 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             {
                 var conversationPlanDate = new ConversationPlanDate
                 {
-                    StartDate = model.StartDate,
-                    EndDate = model.EndDate
+                    StartDate = DateTime.ParseExact(model.StartDate,"dd-mm-yyyy",null),
+                    EndDate = DateTime.ParseExact(model.EndDate,"dd-mm-yyyy",null)
                 };
                 _context.ConversationPlanDates.Add(conversationPlanDate);
                 foreach (var group in model.SelectedGroups)
@@ -127,10 +127,11 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 await _context.ConversationPlanDateClaims.Where(pdc => pdc.ConversationPlanDate == conversationPlanDate).Select(pdc => pdc.Group)
                     .ToListAsync();
 
-            var createConversationPlanDate = new CreateConversationPlanDateViewModel
+            var editConversationPlanDate = new EditConversationPlanDateViewModel
             {
-                StartDate = conversationPlanDate.StartDate,
-                EndDate = conversationPlanDate.EndDate,
+                StartDate = conversationPlanDate.StartDate.ToString("dd-mm-yyyy"),
+                EndDate = conversationPlanDate.EndDate.ToString("dd-mm-yyyy"),
+                Id = id.Value
             };
             var groups = _context.ApplicationUserGroups.ToList();
             var groupSelectList = new List<SelectListItem>();
@@ -150,8 +151,8 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 groupSelectList.Add(selectListItem);
 
             }
-            createConversationPlanDate.Groups = groupSelectList;
-            return View(createConversationPlanDate);
+            editConversationPlanDate.Groups = groupSelectList;
+            return View(editConversationPlanDate);
         }
 
         // POST: Admin/ConversationPlanDates/Edit/5
@@ -159,7 +160,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CreateConversationPlanDateViewModel createConversationPlanDate)
+        public async Task<IActionResult> Edit(int id, EditConversationPlanDateViewModel editConversationPlanDate)
         {
             if (!_context.ConversationPlanDates.Any())
             {
@@ -179,7 +180,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                         .Include(pdc => pdc.Group)
                         .Include(pdc => pdc.ConversationPlanDate)
                         .ToListAsync();
-                foreach (var selectedGroup in createConversationPlanDate.SelectedGroups)
+                foreach (var selectedGroup in editConversationPlanDate.SelectedGroups)
                 {
                     if (conversationPlanDateClaims.All(pdc => pdc.Group.ApplicationUserGroupId != selectedGroup))
                     {
@@ -194,20 +195,20 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 foreach (var conversationPlanDateClaim in conversationPlanDateClaims)
                 {
                     if (
-                        createConversationPlanDate.SelectedGroups.All(
+                        editConversationPlanDate.SelectedGroups.All(
                             pdc => pdc != conversationPlanDateClaim.Group.ApplicationUserGroupId))
                     {
                         _context.ConversationPlanDateClaims.Remove(conversationPlanDateClaim);
                     }
                 }
-                conversationPlanDate.StartDate = DateTime.ParseExact(createConversationPlanDate.Start_Date, "dd-mm-yyyy", null);
-                conversationPlanDate.EndDate = DateTime.ParseExact(createConversationPlanDate.End_Date, "dd-mm-yyyy", null);
+                conversationPlanDate.StartDate = DateTime.ParseExact(editConversationPlanDate.StartDate, "dd-mm-yyyy", null);
+                conversationPlanDate.EndDate = DateTime.ParseExact(editConversationPlanDate.EndDate, "dd-mm-yyyy", null);
                 _context.Update(conversationPlanDate);
                 
                 await _context.SaveChangesAsync();   
                 return RedirectToAction("Index");
             }
-            return View(createConversationPlanDate);
+            return View(editConversationPlanDate);
         }
 
         // GET: Admin/ConversationPlanDates/Delete/5

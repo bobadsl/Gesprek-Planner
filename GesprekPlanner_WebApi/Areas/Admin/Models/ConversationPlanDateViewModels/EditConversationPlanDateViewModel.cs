@@ -10,6 +10,8 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.ConversationPlanDateViewModel
     public class EditConversationPlanDateViewModel : IValidatableObject
     {
         [Required]
+        public int Id { get; set; } 
+        [Required]
         [Display(Name = "Groepen(Meerdere mogelijk)")]
         public List<int> SelectedGroups { get; set; }
         [Required]
