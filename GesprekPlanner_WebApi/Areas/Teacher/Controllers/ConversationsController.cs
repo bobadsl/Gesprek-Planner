@@ -31,7 +31,8 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
 
         private async Task<ApplicationUser> GetCurrentUser()
         {
-            return await _userManager.GetUserAsync(HttpContext.User);
+            var tempuser = await _userManager.GetUserAsync(HttpContext.User);
+            return await _context.Users.Include(u => u.Group).SingleAsync(u => u.Id == tempuser.Id);
         }
 
         // GET: Teacher/Conversations
@@ -44,7 +45,7 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            if (!_context.ConversationPlanDates.Any())
+            if (!_context.ConversationPlanDateClaims.Any(pdc => pdc.Group == GetCurrentUser().Result.Group))
             {
                 ViewData["error"] =
                     "De schooladministrator heeft nog geen gespreksplanning gemaakt.";
@@ -104,7 +105,7 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
             {
                 return View("CreateSchedule",model);
             }
-            
+            // We recreate the HttpGet request here why, because reasons.
             model.PlannableDates = new List<SelectListItem>();
             model.ConversationTypes = new List<SelectListItem>();
             var conversationTypes = _context.ConversationTypes.ToList();
@@ -164,25 +165,29 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
                 schedule.EndTime = startTime.ToString(@"hh\:mm");
                 list.Add(schedule);
             }
+            list[0].ConversationType = conversationType.Id;
             return PartialView("PartialAjaxGenerateSchedule", list);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> FinalizeSchedule(List<CreateSchedule> schedules)
+        public IActionResult FinalizeSchedule(List<CreateSchedule> schedules)
         {
             var date = schedules[0].Date;
-            var conversationType = schedules[0].ConversationType;
-//            foreach (var schedule in schedules)
-//            {
-//                var conversation = new Conversation
-//                {
-//                    ConversationType=_context.ConversationTypes.First(ct => ct.Id == conversationType),
-//                    Id = Guid.NewGuid(),
-//                    Group = HttpContext.User.
-//                }
-//                _context.Conversations.Add();
-//            }
+            var conversationType = _context.ConversationTypes.FirstOrDefault(ct => ct.Id == schedules[0].ConversationType);
+            if (conversationType == null)
+            {
+                return NotFound();
+            }
+            foreach (var schedule in schedules)
+            {//TODO: DateTieme needs to be the starttime
+                var hourminutes = schedule.StartTime.Split(':');
+                var conversation = new Conversation();
+                conversation.ConversationType = conversationType;
+                conversation.Group = GetCurrentUser().Result.Group;
+                conversation.DateTime = date;
+                _context.Conversations.Add(conversation);
+            }
             return Json(schedules);
         }
     }

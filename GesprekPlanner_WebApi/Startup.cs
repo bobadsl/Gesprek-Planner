@@ -108,6 +108,7 @@ namespace GesprekPlanner_WebApi
                     name: "default",
                     template: "{controller}/{action}/{id?}",
                     defaults: new { controller = "Home", action = "Index" });
+
             });
         }
     }

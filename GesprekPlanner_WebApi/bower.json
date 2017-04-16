@@ -13,7 +13,8 @@
     "moment": "2.18.1",
     "signalr": "2.2.1",
     "bootstrap-select": "v2.0.0-beta1",
-    "jquery-form": "v4.2.0"
+    "jquery-form": "v4.2.0",
+    "jqueryui-timepicker-addon": "v1.6.3"
   },
   "resolutions": {
     "jquery-validation": "1.16.0",

@@ -4,6 +4,7 @@
     <div class="col-md-2">&nbsp;</div>
     <div class="col-md-10">
         <input type="hidden" name="[0].Date" value="@Model[0].Date"/>
+        <input type="hidden" name="[0].ConversationType" value="@Model[0].ConversationType"/>
         @foreach (var schedule in @Model)
         {
             <div class="schedulebox">

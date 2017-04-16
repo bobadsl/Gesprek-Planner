@@ -12,7 +12,7 @@ namespace GesprekPlanner_WebApi.Models
          * a lot easier to edit and maintain things
          */
         public Guid Id { get; set; }
-        public ConversationPlanDate ConversationPlanDate { get; set; }
-        public ApplicationUserGroup Group { get; set; }
+        public virtual ConversationPlanDate ConversationPlanDate { get; set; }
+        public virtual ApplicationUserGroup Group { get; set; }
     }
 }

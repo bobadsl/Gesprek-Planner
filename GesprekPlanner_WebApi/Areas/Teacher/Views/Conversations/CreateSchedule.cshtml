@@ -5,6 +5,10 @@
     var counter = 1;
 }
 
+@section Styles{
+    <link href="~/lib/jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.css" rel="stylesheet" />
+}
+
 <h2>CreateSchedule</h2>
 @foreach (var planDate in Model.PlanOnDate)
 {
@@ -13,6 +17,7 @@
     <form class="planForm" id="@formid">
         <div class="form-horizontal">
             <input type="hidden" name="Date" value="@planDate"/>
+            <input type="hidden" value="@Model.ConversationType"/>
             <div class="form-group">
                 <label class="col-md-2 control-label">Plan gesprek voor: </label>
                 <div class="col-md-10">
@@ -22,13 +27,13 @@
             <div class="form-group">
                 <label class="col-md-2 control-label">Start tijd:</label>
                 <div class="col-md-10">
-                    <input type="time" name="StartTime" required/>
+                    <input type="text" name="StartTime" class="StartTime" required/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label">Eind tijd:</label>
                 <div class="col-md-10">
-                    <input type="time" name="EndTime" required/>
+                    <input type="text" name="EndTime" class="EndTime" required/>
                 </div>
             </div>
             <div class="form-group">
@@ -48,12 +53,30 @@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
     <script src="~/lib/jquery-form/src/jquery.form.js"></script>
     <script src="~/lib/moment/moment.js"></script>
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="~/lib/jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.js"></script>
     <script type="text/javascript">
         moment.locale("nl");
         $(document).ready(function() {
             $(".plandate").each(function() {
                 $(this).text(moment($(this).text(), "DDMMYYYY").locale("nl").format('LL'));
             });
+            $('.StartTime').timepicker(
+                $.timepicker.regional['nl'],
+                {
+                    timeFormat: 'HH:mm',
+                    addSliderAccess: true,
+                    sliderAccessArgs: { touchonly: false }
+                }
+            );
+            $('.EndTime').timepicker(
+                $.timepicker.regional['nl'],
+                {
+                    timeFormat: 'HH:mm',
+                    addSliderAccess: true,
+                    sliderAccessArgs: { touchonly: false }
+                }
+            );
         });
 
         $(document).on("submit", ".finalSchedule", function(e) {

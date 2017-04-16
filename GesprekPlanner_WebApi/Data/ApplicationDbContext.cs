@@ -17,6 +17,7 @@ namespace GesprekPlanner_WebApi.Data
         public ApplicationDbContext() { }
         public DbSet<ApplicationUserGroup> ApplicationUserGroups { get; set; }
         public DbSet<ConversationType> ConversationTypes { get; set; }
+        public DbSet<ConversationTypeClaim> ConversationTypeClaims { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
         public DbSet<ConversationPlanDate> ConversationPlanDates { get; set; }
         public DbSet<ConversationPlanDateClaim> ConversationPlanDateClaims { get; set; }
