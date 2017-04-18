@@ -5,10 +5,6 @@
     var counter = 1;
 }
 
-@section Styles{
-    <link href="~/lib/jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.css" rel="stylesheet" />
-}
-
 <h2>CreateSchedule</h2>
 @foreach (var planDate in Model.PlanOnDate)
 {
@@ -61,22 +57,6 @@
             $(".plandate").each(function() {
                 $(this).text(moment($(this).text(), "DDMMYYYY").locale("nl").format('LL'));
             });
-            $('.StartTime').timepicker(
-                $.timepicker.regional['nl'],
-                {
-                    timeFormat: 'HH:mm',
-                    addSliderAccess: true,
-                    sliderAccessArgs: { touchonly: false }
-                }
-            );
-            $('.EndTime').timepicker(
-                $.timepicker.regional['nl'],
-                {
-                    timeFormat: 'HH:mm',
-                    addSliderAccess: true,
-                    sliderAccessArgs: { touchonly: false }
-                }
-            );
         });
 
         $(document).on("submit", ".finalSchedule", function(e) {

@@ -1,4 +1,4 @@
-@model GesprekPlanner_WebApi.Models.ConversationType
+@model GesprekPlanner_WebApi.Areas.Admin.Models.ConversationTypeViewModels.EditConversationTypeViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -14,17 +14,24 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
         <div class="form-group">
-            <label asp-for="ConversationName" class="col-md-2 control-label"></label>
+            <label asp-for="Name" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="ConversationName" class="form-control" />
-                <span asp-validation-for="ConversationName" class="text-danger"></span>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="ConversationDuration" class="col-md-2 control-label"></label>
+            <label asp-for="Duration" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="ConversationDuration" class="form-control" />
-                <span asp-validation-for="ConversationDuration" class="text-danger"></span>
+                <input asp-for="Duration" class="form-control" />
+                <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SelectedGroups" class="col-md-2 control-label"></label>
+            <div class="col-md-5">
+                <select asp-for="SelectedGroups" class="form-control selectpicker" multiple asp-items="@Model.Groups"></select>
+                <span asp-validation-for="SelectedGroups" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">

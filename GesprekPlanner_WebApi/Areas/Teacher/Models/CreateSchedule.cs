@@ -11,8 +11,10 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Models
     {
         public string FormId { get; set; }
         [Required]
+        [RegularExpression("[0-9;]")]
         public string StartTime { get; set; }
         [Required]
+        [RegularExpression("[0-9;]")]
         public string EndTime { get; set; }
         [Required]
         public int ConversationType { get; set; }

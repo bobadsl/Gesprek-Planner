@@ -43,16 +43,40 @@ namespace GesprekPlanner_WebApi.Data
             }
             if (!context.ConversationTypes.Any())
             {
-                context.ConversationTypes.Add(new ConversationType
+                var con1 = new ConversationType
                 {
                     ConversationDuration = 15,
                     ConversationName = "Voortgangsgesprek"
-                });
-                context.ConversationTypes.Add(new ConversationType
+                };
+                var con2 = new ConversationType
                 {
                     ConversationDuration = 10,
                     ConversationName = "Rapportgesprek"
-                });
+                };
+                context.ConversationTypes.Add(con1);
+                context.ConversationTypes.Add(con2);
+                context.SaveChanges();
+                var groupList1 = new List<ApplicationUserGroup>
+                {
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 5),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 2),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 7)
+                };
+                var groupList2 = new List<ApplicationUserGroup>
+                {
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 15),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 13),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 9),
+                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 4)
+                };
+                foreach (var groupList in groupList1)
+                {
+                    context.ConversationTypeClaims.Add(new ConversationTypeClaim {ConversationType = con1, Group = groupList});
+                }
+                foreach (var groupList in groupList2)
+                {
+                    context.ConversationTypeClaims.Add(new ConversationTypeClaim {ConversationType = con2, Group = groupList});
+                }
             }
             if (!context.ConversationPlanDates.Any())
             {
@@ -149,7 +173,7 @@ namespace GesprekPlanner_WebApi.Data
                 var teacher = new ApplicationUser
                 {
                     Email = "leraar@email.com",
-                    UserName = "Leraar",
+                    UserName = "Leraar6b",
                     SecurityStamp = Guid.NewGuid().ToString("D"),
                     Group = context.ApplicationUserGroups.First(g => g.GroupName == "Groep 6b") 
                 };
@@ -162,7 +186,6 @@ namespace GesprekPlanner_WebApi.Data
 
 
             }
-
             await context.SaveChangesAsync();
         }
 

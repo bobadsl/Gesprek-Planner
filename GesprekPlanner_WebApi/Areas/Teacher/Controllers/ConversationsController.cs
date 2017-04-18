@@ -150,23 +150,30 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
         [HttpPost]
         public IActionResult AjaxCreateSchedule([FromBody]CreateSchedule createSchedule)
         {
-            var startTime = TimeSpan.ParseExact(createSchedule.StartTime, @"hh\:mm", null);
-            var endTime = TimeSpan.ParseExact(createSchedule.EndTime, @"hh\:mm", null);
-            var conversationType = _context.ConversationTypes.First(ct => ct.Id == createSchedule.ConversationType);
-            var user = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            List<CreateSchedule> list = new List<CreateSchedule>();
-            while (true)
+            if (ModelState.IsValid)
             {
-                if (startTime.Equals(endTime) || startTime.Ticks > endTime.Ticks) break;
-                CreateSchedule schedule = new CreateSchedule();
-                schedule.Date = createSchedule.Date;
-                schedule.StartTime = startTime.ToString(@"hh\:mm");
-                startTime = startTime.Add(new TimeSpan(0, conversationType.ConversationDuration, 0));
-                schedule.EndTime = startTime.ToString(@"hh\:mm");
-                list.Add(schedule);
+                var startTime = TimeSpan.ParseExact(createSchedule.StartTime, "hh:mm", null);
+                var endTime = TimeSpan.ParseExact(createSchedule.EndTime, "hh:mm", null);
+                var conversationType = _context.ConversationTypes.First(ct => ct.Id == createSchedule.ConversationType);
+                var user = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                List<CreateSchedule> list = new List<CreateSchedule>();
+                while (true)
+                {
+                    if (startTime.Equals(endTime) || startTime.Ticks > endTime.Ticks) break;
+                    CreateSchedule schedule = new CreateSchedule();
+                    schedule.Date = createSchedule.Date;
+                    schedule.StartTime = startTime.ToString(@"hh\:mm");
+                    startTime = startTime.Add(new TimeSpan(0, conversationType.ConversationDuration, 0));
+                    schedule.EndTime = startTime.ToString(@"hh\:mm");
+                    list.Add(schedule);
+                }
+                list[0].ConversationType = conversationType.Id;
+                return PartialView("PartialAjaxGenerateSchedule", list);
             }
-            list[0].ConversationType = conversationType.Id;
-            return PartialView("PartialAjaxGenerateSchedule", list);
+            else
+            {
+                return null;
+            }
         }
 
         [HttpPost]
@@ -181,12 +188,21 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
             }
             foreach (var schedule in schedules)
             {//TODO: DateTieme needs to be the starttime
-                var hourminutes = schedule.StartTime.Split(':');
+                var startDate = date.Add(TimeSpan.ParseExact(schedule.StartTime, "hh:mm", null));
                 var conversation = new Conversation();
                 conversation.ConversationType = conversationType;
                 conversation.Group = GetCurrentUser().Result.Group;
-                conversation.DateTime = date;
-                _context.Conversations.Add(conversation);
+                conversation.DateTime = startDate;
+                if (
+                    !_context.Conversations
+                        .Include(c => c.Group)
+                        .Include(c => c.ConversationType)
+                        .Where(c => c.DateTime == conversation.DateTime)
+                        .Where(c => c.Group == conversation.Group)
+                        .Any(c => c.ConversationType == conversation.ConversationType))
+                {
+                    _context.Conversations.Add(conversation);
+                }
             }
             return Json(schedules);
         }
