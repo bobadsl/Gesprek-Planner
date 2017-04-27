@@ -22,9 +22,9 @@ namespace GesprekPlanner_WebApi.Data
                 var roleStore = new RoleStore<IdentityRole>(context);
                 foreach (string role in roles)
                 {
-                        IdentityRole identityRole = new IdentityRole {Name = role, NormalizedName = role.ToUpper()};
-                        await roleStore.CreateAsync(identityRole);
-                    }
+                    IdentityRole identityRole = new IdentityRole {Name = role, NormalizedName = role.ToUpper()};
+                    await roleStore.CreateAsync(identityRole);
+                }
                 
             }
             if (!context.ApplicationUserGroups.Any())

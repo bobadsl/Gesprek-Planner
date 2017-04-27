@@ -12,6 +12,7 @@ namespace GesprekPlanner_WebApi.Models
         public virtual ApplicationUserGroup Group { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime DateTime { get; set; }
+        public DateTime EndTime { get; set; }
         public virtual ConversationType ConversationType { get; set; }
         //public virtual ParentUser Parent { get; set; } // This is gonna be included later.
         public bool IsChosen { get; set; }

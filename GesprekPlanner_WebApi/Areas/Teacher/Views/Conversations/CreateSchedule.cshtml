@@ -23,18 +23,13 @@
             <div class="form-group">
                 <label class="col-md-2 control-label">Start tijd:</label>
                 <div class="col-md-10">
-                    <input type="text" name="StartTime" class="StartTime" required/>
+                    <input type="text" name="StartTime" class="StartTime" placeholder="Tijd in uren:minuten" required/>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label">Eind tijd:</label>
                 <div class="col-md-10">
-                    <input type="text" name="EndTime" class="EndTime" required/>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Plan tijden" class="btn btn-default"/>
+                    <input type="text" name="EndTime" class="EndTime" placeholder="Tijd in uren:minuten" required/>
                 </div>
             </div>
         </div>
@@ -42,6 +37,8 @@
     <div id="@formoutputid"></div>
     counter++;
 }
+<button class="btn btn-primair makeConversations">Maak gesprekken aan</button>
+<button class="btn btn-primair planConversations" style="display: none;">Plan gesprekken</button>
 <div id="output"></div>
 
 
@@ -59,29 +56,8 @@
             });
         });
 
-        $(document).on("submit", ".finalSchedule", function(e) {
-            e.preventDefault();
-            $(this).ajaxSubmit({
-                target: $(this)
-            });
-        });
-
-        $(document).on("click", ".deleteSchedule", function () {
-            var counter = 0;
-            var scheduleboxParent = $(this).parent().parent().parent();
-            console.log($(this).parent().parent().remove());
-            scheduleboxParent.find(".schedulebox").each(function() {
-                $(this).find(".formid").attr("name","["+counter+"].FormId");
-                $(this).find(".starttime").attr("name", "[" + counter + "].StartTime");
-                $(this).find(".endtime").attr("name", "[" + counter + "].EndTime");
-                counter++;
-            });
-        });
-
-        $(function() {
-
-            $(".planForm").submit(function(e) {
-                e.preventDefault();
+        $(document).on("click",".makeConversations",function() {
+            $(".planForm").each(function(e) {
                 $(this).validate();
 
                 var form = $("#" + $(this).attr("id"));
@@ -99,13 +75,43 @@
                     type: 'POST',
                     dataType: 'html',
                     success: function (data) {
+                        if (data.startsWith()) {
+                            console.log("error");
+                        }
+                        console.log(data);
                         console.log(formidoutput);
                         $(formidoutput).html(data);
+                    },
+                    error: function() {
+                        return;
                     }
                 });
-                e.preventDefault();
+                $(this).hide();
+            });
+            $(this).hide();
+            $(".planConversations").show();
+        });
+        $(document).on("click", ".planConversations", function() {
+            $(".finalSchedule").each(function() {
+                $(this).ajaxSubmit({
+                    target: $(this)
+                });
             });
         });
+
+        $(document).on("click",
+            ".deleteSchedule",
+            function() {
+                var counter = 0;
+                var scheduleboxParent = $(this).parent().parent().parent();
+                console.log($(this).parent().parent().remove());
+                scheduleboxParent.find(".schedulebox").each(function() {
+                    $(this).find(".formid").attr("name", "[" + counter + "].FormId");
+                    $(this).find(".starttime").attr("name", "[" + counter + "].StartTime");
+                    $(this).find(".endtime").attr("name", "[" + counter + "].EndTime");
+                    counter++;
+                });
+            });
 
     </script>
 }

@@ -1,0 +1,13 @@
+Tijds notering erbij zetten. x?
+Tijden opslaan werkt nog steeds niet.
+Een knop om alles te plannen inplaats van 1 knop per dag.
+Bij gesprekstypes moet er een knop komen om alle groepen de deselecteren. x
+Bij gesprekstypes een groepsoverzicht en bij gespreksdatums wel meerdere. x
+
+
+
+Voor plannen
+Hoe kan de leraar het zien
+
+Bug: de tijden kunnen niet worden geplant. Als er op plan tijden gedrukt wordt komt er een 500 internal server error
+Bug: De gebruiker kan niet uitloggen. Error 400 voor antiforgerytoken?

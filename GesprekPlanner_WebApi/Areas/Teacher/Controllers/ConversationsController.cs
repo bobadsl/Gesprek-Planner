@@ -152,8 +152,8 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
         {
             if (ModelState.IsValid)
             {
-                var startTime = TimeSpan.ParseExact(createSchedule.StartTime, "hh:mm", null);
-                var endTime = TimeSpan.ParseExact(createSchedule.EndTime, "hh:mm", null);
+                var startTime = TimeSpan.Parse(createSchedule.StartTime);
+                var endTime = TimeSpan.Parse(createSchedule.EndTime);
                 var conversationType = _context.ConversationTypes.First(ct => ct.Id == createSchedule.ConversationType);
                 var user = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 List<CreateSchedule> list = new List<CreateSchedule>();
@@ -162,9 +162,9 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
                     if (startTime.Equals(endTime) || startTime.Ticks > endTime.Ticks) break;
                     CreateSchedule schedule = new CreateSchedule();
                     schedule.Date = createSchedule.Date;
-                    schedule.StartTime = startTime.ToString(@"hh\:mm");
+                    schedule.StartTime = startTime.ToString();
                     startTime = startTime.Add(new TimeSpan(0, conversationType.ConversationDuration, 0));
-                    schedule.EndTime = startTime.ToString(@"hh\:mm");
+                    schedule.EndTime = startTime.ToString();
                     list.Add(schedule);
                 }
                 list[0].ConversationType = conversationType.Id;
@@ -172,7 +172,7 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
             }
             else
             {
-                return null;
+                return Content(createSchedule.Error);
             }
         }
 
@@ -188,16 +188,19 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
             }
             foreach (var schedule in schedules)
             {//TODO: DateTieme needs to be the starttime
-                var startDate = date.Add(TimeSpan.ParseExact(schedule.StartTime, "hh:mm", null));
+                var startTime = date.Add(TimeSpan.Parse(schedule.StartTime));
+                var endTime = date.Add(TimeSpan.Parse(schedule.EndTime));
                 var conversation = new Conversation();
                 conversation.ConversationType = conversationType;
                 conversation.Group = GetCurrentUser().Result.Group;
-                conversation.DateTime = startDate;
+                conversation.DateTime = startTime;
+
                 if (
                     !_context.Conversations
                         .Include(c => c.Group)
                         .Include(c => c.ConversationType)
                         .Where(c => c.DateTime == conversation.DateTime)
+                        .Where(c => c.EndTime == conversation.EndTime)
                         .Where(c => c.Group == conversation.Group)
                         .Any(c => c.ConversationType == conversation.ConversationType))
                 {

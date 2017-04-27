@@ -39,6 +39,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Cre&euml;er" class="btn btn-default" />
+                <button class="btn btn-default" id="ClearSelectedGroups">Deselecteer groepen</button>
             </div>
         </div>
     </div>
@@ -50,5 +51,14 @@
 
 @section Scripts{
     <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.js"></script>
+    <script type="text/javascript">
+        $("#ClearSelectedGroups").on("click", function (e) {
+            e.preventDefault();
+            $('#SelectedGroups').selectpicker('deselectAll');
+            $('#SelectedGroups').selectpicker('refresh');
+        });
+        
+    </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
 }
