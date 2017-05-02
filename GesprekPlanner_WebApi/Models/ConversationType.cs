@@ -17,5 +17,7 @@ namespace GesprekPlanner_WebApi.Models
         [Required]
         [Display(Name = "Gespreksduur (in minuten)")]
         public int ConversationDuration { get; set; }
+
+        public virtual School School { get; set; }
     }
 }

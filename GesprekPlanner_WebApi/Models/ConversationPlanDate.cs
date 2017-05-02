@@ -22,7 +22,6 @@ namespace GesprekPlanner_WebApi.Models
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
-
-        //public School School { get; set; }
+        public virtual School School { get; set; }
     }
 }

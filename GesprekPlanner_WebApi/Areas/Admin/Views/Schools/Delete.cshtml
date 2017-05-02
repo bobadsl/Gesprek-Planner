@@ -1,0 +1,66 @@
+@model GesprekPlanner_WebApi.Models.School
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>School</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <input type="hidden" asp-for="Id" />
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolUrl)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolUrl)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolTelephone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolTelephone)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolEmail)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolEmail)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolStreet)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolStreet)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolPostCode)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolPostCode)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolLogo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolLogo)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            <a asp-action="Index">Back to List</a>
+        </div>
+    </form>
+</div>

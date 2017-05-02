@@ -10,5 +10,6 @@ namespace GesprekPlanner_WebApi.Models
     public class ApplicationUser : IdentityUser
     {
         public virtual ApplicationUserGroup Group { get; set; }
+        public virtual School School { get; set; }
     }
 }

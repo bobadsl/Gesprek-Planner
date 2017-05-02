@@ -16,5 +16,6 @@ namespace GesprekPlanner_WebApi.Models
         public virtual ConversationType ConversationType { get; set; }
         //public virtual ParentUser Parent { get; set; } // This is gonna be included later.
         public bool IsChosen { get; set; }
+        public virtual School School { get; set; }
     }
 }

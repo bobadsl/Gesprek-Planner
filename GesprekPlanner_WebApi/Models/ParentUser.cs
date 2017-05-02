@@ -20,5 +20,6 @@ namespace GesprekPlanner_WebApi.Models
         [Required]
         [Display(Name="Naam van kind")]
         public string ChildName { get; set; } // Is unique
+        public virtual School School { get; set; }
     }
 }

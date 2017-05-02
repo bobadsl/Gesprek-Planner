@@ -27,17 +27,52 @@ namespace GesprekPlanner_WebApi.Data
                 }
                 
             }
+            if (!context.Schools.Any())
+            {
+                School maSchool = new School
+                {
+                    Id = Guid.NewGuid(),
+                    SchoolName = "Ods Meester Aafjes",
+                    SchoolEmail = "info@meesteraafjesschool.nl",
+                    SchoolPostCode = "4194 RR Meteren",
+                    SchoolStreet = "J.H. Lievense van Herwaardenstraat 2",
+                    SchoolTelephone = "0345 581 158",
+                    SchoolUrl = "http://odsmeesteraafjes.nl"
+                };
+                School oeSchool = new School
+                {
+                    Id = Guid.NewGuid(),
+                    SchoolName = "Obs Est",
+                    SchoolEmail = "info@obsest.nl",
+                    SchoolPostCode = "4185 NA EST",
+                    SchoolStreet = "Dorpsstraat 3",
+                    SchoolTelephone = "0345-569481",
+                    SchoolUrl = "http://www.obsest.nl"
+                };
+                context.Schools.Add(maSchool);
+                context.Schools.Add(oeSchool);
+                context.SaveChanges();
+            }
+            var schools = context.Schools.ToList();
             if (!context.ApplicationUserGroups.Any())
             {
-                string[] groups =
+                string[] maGroups =
                 {
                     "Groep 1/2a", "Groep 1/2b", "Groep 1/2c", "Groep 1/2d", "Groep 3a", "Groep 3b", "Groep 4a",
                     "Groep 4b", "Groep 5a", "Groep 5b", "Groep 6a", "Groep 6b", "Groep 7a", "Groep 7b", "Groep 8a",
                     "Groep 8b", "Directie"
                 };
-                foreach (string group in groups)
+                string[] oeGroups =
                 {
-                    context.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = group });
+                    "Groep 1-2-3", "Groep 4-5-6, Groep 7-8"
+                };
+                foreach (string group in maGroups)
+                {
+                    context.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = group, School = schools.First(s => s.SchoolName == "Ods Meester Aafjes") });
+                }
+                foreach (string group in oeGroups)
+                {
+                    context.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = group, School = schools.First(s => s.SchoolName == "Obs Est") });
                 }
                 context.SaveChanges();
             }
@@ -46,12 +81,14 @@ namespace GesprekPlanner_WebApi.Data
                 var con1 = new ConversationType
                 {
                     ConversationDuration = 15,
-                    ConversationName = "Voortgangsgesprek"
+                    ConversationName = "Voortgangsgesprek",
+                    School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
                 };
                 var con2 = new ConversationType
                 {
                     ConversationDuration = 10,
-                    ConversationName = "Rapportgesprek"
+                    ConversationName = "Rapportgesprek",
+                    School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
                 };
                 context.ConversationTypes.Add(con1);
                 context.ConversationTypes.Add(con2);
@@ -82,17 +119,17 @@ namespace GesprekPlanner_WebApi.Data
             {
                 DateTime[] startDates =
                 {
-                    new DateTime(2017, 3, 28),
-                    new DateTime(2017, 4, 2),
-                    new DateTime(2017, 4, 7),
-                    new DateTime(2017, 4, 20)
+                    new DateTime(2017, 5, 28),
+                    new DateTime(2017, 6, 2),
+                    new DateTime(2017, 6, 7),
+                    new DateTime(2017, 6, 20)
                 };
                 DateTime[] endDates =
                 {
-                    new DateTime(2017, 4, 8),
-                    new DateTime(2017, 4, 19),
-                    new DateTime(2017, 4, 29),
-                    new DateTime(2017, 5, 5)
+                    new DateTime(2017, 6, 8),
+                    new DateTime(2017, 6, 19),
+                    new DateTime(2017, 6, 29),
+                    new DateTime(2017, 7, 5)
                 };
                 var groupList = new List<List<ApplicationUserGroup>>();
                 groupList.Add(new List<ApplicationUserGroup>
@@ -124,7 +161,8 @@ namespace GesprekPlanner_WebApi.Data
                     var planDate = new ConversationPlanDate
                     {
                         StartDate = startDates[i],
-                        EndDate = endDates[i]
+                        EndDate = endDates[i],
+                        School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
                     };
                     context.ConversationPlanDates.Add(planDate);
                     foreach (var group in groupList[i])
@@ -157,25 +195,41 @@ namespace GesprekPlanner_WebApi.Data
                 await _userManager.AddToRoleAsync(owner, "Eigenaar");
 
 
-                var schooladmin = new ApplicationUser
+                var schoolAdminMA = new ApplicationUser
                 {
                     Email = "schooladmin@email.com",
-                    UserName = "SchoolAdmin",
-                    SecurityStamp = Guid.NewGuid().ToString("D")
+                    UserName = "SchoolAdminMa",
+                    SecurityStamp = Guid.NewGuid().ToString("D"),
+                    School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
                 };
-                schooladmin.NormalizedEmail = schooladmin.Email.ToUpper();
-                schooladmin.NormalizedUserName = schooladmin.UserName.ToUpper();
-                hashed = password.HashPassword(schooladmin, "Dalton");
-                schooladmin.PasswordHash = hashed;
-                await userStore.CreateAsync(schooladmin);
-                await _userManager.AddToRoleAsync(schooladmin, "Schooladmin");
+                schoolAdminMA.NormalizedEmail = schoolAdminMA.Email.ToUpper();
+                schoolAdminMA.NormalizedUserName = schoolAdminMA.UserName.ToUpper();
+                hashed = password.HashPassword(schoolAdminMA, "Dalton");
+                schoolAdminMA.PasswordHash = hashed;
+                await userStore.CreateAsync(schoolAdminMA);
+                await _userManager.AddToRoleAsync(schoolAdminMA, "Schooladmin");
+
+                var schoolAdminOE = new ApplicationUser
+                {
+                    Email = "schooladmin@email.com",
+                    UserName = "SchoolAdminOe",
+                    SecurityStamp = Guid.NewGuid().ToString("D"),
+                    School = schools.First(s => s.SchoolName == "Obs Est")
+                };
+                schoolAdminOE.NormalizedEmail = schoolAdminOE.Email.ToUpper();
+                schoolAdminOE.NormalizedUserName = schoolAdminOE.UserName.ToUpper();
+                hashed = password.HashPassword(schoolAdminOE, "Dalton");
+                schoolAdminOE.PasswordHash = hashed;
+                await userStore.CreateAsync(schoolAdminOE);
+                await _userManager.AddToRoleAsync(schoolAdminOE, "Schooladmin");
 
                 var teacher = new ApplicationUser
                 {
                     Email = "leraar@email.com",
                     UserName = "Leraar6b",
                     SecurityStamp = Guid.NewGuid().ToString("D"),
-                    Group = context.ApplicationUserGroups.First(g => g.GroupName == "Groep 6b") 
+                    Group = context.ApplicationUserGroups.First(g => g.GroupName == "Groep 6b"),
+                    School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
                 };
                 teacher.NormalizedEmail = teacher.Email.ToUpper();
                 teacher.NormalizedUserName = teacher.UserName.ToUpper();

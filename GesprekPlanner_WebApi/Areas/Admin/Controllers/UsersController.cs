@@ -9,12 +9,12 @@ using GesprekPlanner_WebApi.Areas.Admin.Models.UsersViewModels;
 using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Remotion.Linq.Clauses;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -38,23 +38,47 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            
-            var users = _dbContext.Users.Include(u => u.Group).Select(item => new MinimalUser
+            List<MinimalUser> users;
+            if (User.IsInRole("Eigenaar"))
             {
-                Id = item.Id,
-                UserName = item.UserName,
-                Email = item.Email,
-                Group = item.Group
-            }).ToList();
+                users = _dbContext.Users.Include(u => u.Group).Select(item => new MinimalUser
+                {
+                    Id = item.Id,
+                    UserName = item.UserName,
+                    Email = item.Email,
+                    Group = item.Group
+                }).ToList();
+            }
+            else
+            {
+                users = _dbContext.Users.Include(u => u.Group).Where(u => u.School.Id == Guid.Parse(HttpContext.Session.GetString("School"))).Select(item => new MinimalUser
+                {
+                    Id = item.Id,
+                    UserName = item.UserName,
+                    Email = item.Email,
+                    Group = item.Group
+                }).ToList();
+            }
             return View(users);
         }
 
         [HttpGet]
         public IActionResult Register()
         {
-            var groups = _dbContext.ApplicationUserGroups.ToList();
-            if (groups.Count == 0) return RedirectToAction("Create", "Groups");
+            List<ApplicationUserGroup> groups;
             var model = new RegisterNewUserViewModel();
+            if (User.IsInRole("Eigenaar"))
+            {
+                groups = _dbContext.ApplicationUserGroups.ToList();
+                model.Schools = new SelectList(_dbContext.Schools.ToList(), "SchoolName");
+            }
+            else
+            {
+                groups =
+                    _dbContext.ApplicationUserGroups.Where(
+                        u => u.School.Id == Guid.Parse(HttpContext.Session.GetString("School"))).ToList();
+            }
+            if (groups.Count == 0) return RedirectToAction("Create", "Groups");
             model.Roles = new SelectList(_dbContext.Roles.ToList(), "Name");
             model.Groups = JsonConvert.SerializeObject(groups.Select(g => g.GroupName).ToList());
             return View(model);
@@ -66,13 +90,17 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 ApplicationUser user;
-                if (!_dbContext.ApplicationUserGroups.Any(g => g.GroupName == model.Group))
+                if (!_dbContext.ApplicationUserGroups.Where(u => u.School.Id == Guid.Parse(HttpContext.Session.GetString("School"))).Any(g => g.GroupName == model.Group))
                 {
-                    var AddedGroup = _dbContext.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = model.Group });
-                    user = new ApplicationUser { UserName = model.Username, Email = model.Email, Group = AddedGroup.Entity };
+                    _dbContext.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = model.Group });
                     _dbContext.SaveChanges();
                 }
                 user = new ApplicationUser { UserName = model.Username, Email = model.Email, Group = _dbContext.ApplicationUserGroups.First(g => g.GroupName == model.Group) };
+                if (User.IsInRole("Eigenaar"))
+                {
+                    user.School =
+                        _dbContext.Schools.First(s => s.SchoolName == model.SchoolName);
+                }
                 var result = _userManager.CreateAsync(user, model.Password).Result;
                 if (result.Succeeded)
                 {

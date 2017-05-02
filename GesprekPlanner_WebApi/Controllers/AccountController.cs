@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GesprekPlanner_WebApi.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,9 @@ using Microsoft.Extensions.Options;
 using GesprekPlanner_WebApi.Models;
 using GesprekPlanner_WebApi.Models.AccountViewModels;
 using GesprekPlanner_WebApi.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace GesprekPlanner_WebApi.Controllers
 {
@@ -25,6 +28,7 @@ namespace GesprekPlanner_WebApi.Controllers
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
+        private readonly ApplicationDbContext _context;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -32,7 +36,8 @@ namespace GesprekPlanner_WebApi.Controllers
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -40,6 +45,7 @@ namespace GesprekPlanner_WebApi.Controllers
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _context = context;
         }
 
         //
@@ -70,6 +76,18 @@ namespace GesprekPlanner_WebApi.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    Guid school;
+                    var user = _context.Users.First(u => u.UserName == model.Username);
+                    if (_userManager.IsInRoleAsync(user, "Eigenaar").Result)
+                    {
+                        school = new Guid();
+                    }
+                    else
+                    {
+                        school = _context.Users.Include(u => u.School).SingleOrDefault(u => u.UserName == model.Username).School.Id;
+                    }
+                    
+                    HttpContext.Session.SetString("School", school.ToString());
                     _logger.LogInformation(1, "User logged in.");
                     return RedirectToLocal(returnUrl);
                 }

@@ -25,7 +25,7 @@
             </a>
             <ul class="treeview-menu">
                 <li><a asp-area="Admin"asp-controller="Groups" asp-action="Index">Groepen</a></li>
-                <li><a asp-area="Admin"asp-controller="Groups" asp-action="Create">>Cre&euml;er nieuwe groep</a></li>
+                <li><a asp-area="Admin"asp-controller="Groups" asp-action="Create">Cre&euml;er nieuwe groep</a></li>
             </ul>
         </li>
         <li class="treeview">
@@ -37,7 +37,7 @@
             </a>
             <ul class="treeview-menu">
                 <li><a asp-area="Admin" asp-controller="ConversationType" asp-action="Index">Gesprekstypes</a></li>
-                <li><a asp-area="Admin" asp-controller="ConversationType" asp-action="Create">>Cre&euml;er nieuw gesprekstype</a></li>
+                <li><a asp-area="Admin" asp-controller="ConversationType" asp-action="Create">Cre&euml;er nieuw gesprekstype</a></li>
             </ul>
         </li>
         <li class="treeview">
@@ -49,9 +49,24 @@
             </a>
             <ul class="treeview-menu">
                 <li><a asp-area="Admin" asp-controller="ConversationPlanDates" asp-action="Index">Gespreksdatums</a></li>
-                <li><a asp-area="Admin" asp-controller="ConversationPlanDates" asp-action="Create">>Cre&euml;er nieuw gespreksplanning</a></li>
+                <li><a asp-area="Admin" asp-controller="ConversationPlanDates" asp-action="Create">Cre&euml;er nieuw gespreksplanning</a></li>
             </ul>
         </li>
+        @if (User.IsInRole("Eigenaar"))
+        {
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-link"></i> <span>Scholen</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a asp-area="Admin" asp-controller="Schools" asp-action="Index">Scholen</a></li>
+                    <li><a asp-area="Admin" asp-controller="Schools" asp-action="Create">Voeg school toe</a></li>
+                </ul>
+            </li>
+        }
         <li><a href="#"><i class="fa fa-link"></i><span>Another Link</span></a></li>
         <li class="treeview">
             <a href="#">

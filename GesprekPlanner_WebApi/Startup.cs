@@ -51,6 +51,16 @@ namespace GesprekPlanner_WebApi
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            // Adds a default in-memory implementation of IDistributedCache.
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.CookieHttpOnly = true;
+            });
+
             services.AddMvc();
 
             services.AddSignalR(options =>
@@ -98,6 +108,7 @@ namespace GesprekPlanner_WebApi
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
             app.UseSignalR();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

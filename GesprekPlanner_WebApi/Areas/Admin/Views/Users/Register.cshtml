@@ -27,6 +27,16 @@
             <span asp-validation-for="Username" class="text-danger"></span>
         </div>
     </div>
+    @if (User.IsInRole("Eigenaar"))
+    {
+        <div class="form-group">
+            <label asp-for="SchoolName" class="col-md-2 control-label"></label>
+            <div class="col-md-5 end">
+                <select asp-for="SchoolName" asp-items="@Model.Schools" class="selectpicker" title="Kies een school"></select>
+                <span asp-validation-for="SchoolName" class="text-danger"></span>
+            </div>
+        </div>
+    }
     <div class="form-group">
         <label asp-for="Group" class="col-md-2 control-label"></label>
         <div class="col-md-5 end">

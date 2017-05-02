@@ -12,13 +12,11 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.UsersViewModels
     {
         [Required]
         [Display(Name = "Gebruikersnaam")]
-        [RegularExpression("([<>()/])", ErrorMessage = "<> () / zijn illegale tekens")]
         [StringLength(100, ErrorMessage = "De {0} moet minimaal {2} en maximaal {1} tekens lang zijn.", MinimumLength = 6)]
         public string Username { get; set; }
 
         [Required]
         [DataType(DataType.EmailAddress)]
-        [RegularExpression("([<>()/])", ErrorMessage = "<> () / zijn illegale tekens")]
         [Display(Name = "Email adres")]
         public string Email { get; set; }
 
@@ -29,7 +27,6 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.UsersViewModels
         public string Password { get; set; }
         [Required]
         [Display(Name = "Groep")]
-        [RegularExpression("([<>()/])", ErrorMessage = "<> () / zijn illegale tekens")]
         public string Group { get; set; }
 
         public string Groups { get; set; } // This is a Json string
@@ -39,6 +36,10 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.UsersViewModels
         [Display(Name="Functie")]
         public string RoleName { get; set; }
         public IEnumerable<SelectListItem> Roles { get; set; }
+
+        [Display(Name="School")]
+        public string SchoolName { get; set; }
+        public IEnumerable<SelectListItem> Schools { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

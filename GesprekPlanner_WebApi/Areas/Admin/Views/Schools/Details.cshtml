@@ -1,0 +1,61 @@
+@model GesprekPlanner_WebApi.Models.School
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>School</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolUrl)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolUrl)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolTelephone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolTelephone)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolEmail)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolEmail)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolStreet)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolStreet)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolPostCode)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolPostCode)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SchoolLogo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SchoolLogo)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

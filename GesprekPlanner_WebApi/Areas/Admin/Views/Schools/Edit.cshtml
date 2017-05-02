@@ -1,0 +1,76 @@
+@model GesprekPlanner_WebApi.Models.School
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit</h2>
+
+<form asp-action="Edit">
+    <div class="form-horizontal">
+        <h4>School</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label asp-for="SchoolName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="SchoolName" class="form-control" />
+                <span asp-validation-for="SchoolName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SchoolUrl" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="SchoolUrl" class="form-control" />
+                <span asp-validation-for="SchoolUrl" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SchoolTelephone" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="SchoolTelephone" class="form-control" />
+                <span asp-validation-for="SchoolTelephone" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SchoolEmail" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="SchoolEmail" class="form-control" />
+                <span asp-validation-for="SchoolEmail" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SchoolStreet" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="SchoolStreet" class="form-control" />
+                <span asp-validation-for="SchoolStreet" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SchoolPostCode" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="SchoolPostCode" class="form-control" />
+                <span asp-validation-for="SchoolPostCode" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SchoolLogo" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="SchoolLogo" class="form-control" />
+                <span asp-validation-for="SchoolLogo" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
