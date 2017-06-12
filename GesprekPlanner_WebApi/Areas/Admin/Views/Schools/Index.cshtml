@@ -14,25 +14,25 @@
     <thead>
         <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.SchoolName)
+                    @Html.DisplayNameFor(model => model.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.SchoolUrl)
+                    @Html.DisplayNameFor(model => model.Url)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.SchoolTelephone)
+                    @Html.DisplayNameFor(model => model.Telephone)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.SchoolEmail)
+                    @Html.DisplayNameFor(model => model.Email)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.SchoolStreet)
+                    @Html.DisplayNameFor(model => model.Street)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.SchoolPostCode)
+                    @Html.DisplayNameFor(model => model.PostCode)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.SchoolLogo)
+                    @Html.DisplayNameFor(model => model.Logo)
                 </th>
             <th></th>
         </tr>
@@ -41,25 +41,25 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.SchoolName)
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SchoolUrl)
+                @Html.DisplayFor(modelItem => item.Url)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SchoolTelephone)
+                @Html.DisplayFor(modelItem => item.Telephone)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SchoolEmail)
+                @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SchoolStreet)
+                @Html.DisplayFor(modelItem => item.Street)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SchoolPostCode)
+                @Html.DisplayFor(modelItem => item.PostCode)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SchoolLogo)
+                @Html.DisplayFor(modelItem => item.Logo)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

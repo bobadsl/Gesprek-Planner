@@ -5,6 +5,7 @@ using System.Linq;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GesprekPlanner_WebApi.Data
@@ -14,7 +15,7 @@ namespace GesprekPlanner_WebApi.Data
         public static async void Initialize(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetService<ApplicationDbContext>();
-            
+            context.Database.Migrate();
             if (!context.Roles.Any())
             {
                 string[] roles = {"Eigenaar", "Schooladmin", "Leraar"};
@@ -32,22 +33,22 @@ namespace GesprekPlanner_WebApi.Data
                 School maSchool = new School
                 {
                     Id = Guid.NewGuid(),
-                    SchoolName = "Ods Meester Aafjes",
-                    SchoolEmail = "info@meesteraafjesschool.nl",
-                    SchoolPostCode = "4194 RR Meteren",
-                    SchoolStreet = "J.H. Lievense van Herwaardenstraat 2",
-                    SchoolTelephone = "0345 581 158",
-                    SchoolUrl = "http://odsmeesteraafjes.nl"
+                    Name = "Ods Meester Aafjes",
+                    Email = "info@meesteraafjesschool.nl",
+                    PostCode = "4194 RR Meteren",
+                    Street = "J.H. Lievense van Herwaardenstraat 2",
+                    Telephone = "0345 581 158",
+                    Url = "http://odsmeesteraafjes.nl"
                 };
                 School oeSchool = new School
                 {
                     Id = Guid.NewGuid(),
-                    SchoolName = "Obs Est",
-                    SchoolEmail = "info@obsest.nl",
-                    SchoolPostCode = "4185 NA EST",
-                    SchoolStreet = "Dorpsstraat 3",
-                    SchoolTelephone = "0345-569481",
-                    SchoolUrl = "http://www.obsest.nl"
+                    Name = "Obs Est",
+                    Email = "info@obsest.nl",
+                    PostCode = "4185 NA EST",
+                    Street = "Dorpsstraat 3",
+                    Telephone = "0345-569481",
+                    Url = "http://www.obsest.nl"
                 };
                 context.Schools.Add(maSchool);
                 context.Schools.Add(oeSchool);
@@ -64,15 +65,17 @@ namespace GesprekPlanner_WebApi.Data
                 };
                 string[] oeGroups =
                 {
-                    "Groep 1-2-3", "Groep 4-5-6, Groep 7-8"
+                    "Groep 1-2-3", "Groep 4-5-6", "Groep 7-8"
                 };
                 foreach (string group in maGroups)
                 {
-                    context.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = group, School = schools.First(s => s.SchoolName == "Ods Meester Aafjes") });
+                    context.ApplicationUserGroups.Add(new ApplicationUserGroup {GroupName = group, School = schools.First(s => s.Name == "Ods Meester Aafjes") });
+                    context.SaveChanges();
                 }
                 foreach (string group in oeGroups)
                 {
-                    context.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = group, School = schools.First(s => s.SchoolName == "Obs Est") });
+                    context.ApplicationUserGroups.Add(new ApplicationUserGroup {GroupName = group, School = schools.First(s => s.Name == "Obs Est") });
+                    context.SaveChanges();
                 }
                 context.SaveChanges();
             }
@@ -82,29 +85,29 @@ namespace GesprekPlanner_WebApi.Data
                 {
                     ConversationDuration = 15,
                     ConversationName = "Voortgangsgesprek",
-                    School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
+                    School = schools.First(s => s.Name == "Ods Meester Aafjes")
                 };
                 var con2 = new ConversationType
                 {
                     ConversationDuration = 10,
                     ConversationName = "Rapportgesprek",
-                    School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
+                    School = schools.First(s => s.Name == "Ods Meester Aafjes")
                 };
                 context.ConversationTypes.Add(con1);
                 context.ConversationTypes.Add(con2);
                 context.SaveChanges();
                 var groupList1 = new List<ApplicationUserGroup>
                 {
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 5),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 2),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 7)
+                    context.ApplicationUserGroups.First(g=>g.Id == 5),
+                    context.ApplicationUserGroups.First(g=>g.Id == 2),
+                    context.ApplicationUserGroups.First(g=>g.Id == 7)
                 };
                 var groupList2 = new List<ApplicationUserGroup>
                 {
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 15),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 13),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 9),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 4)
+                    context.ApplicationUserGroups.First(g=>g.Id == 15),
+                    context.ApplicationUserGroups.First(g=>g.Id == 13),
+                    context.ApplicationUserGroups.First(g=>g.Id == 9),
+                    context.ApplicationUserGroups.First(g=>g.Id == 4)
                 };
                 foreach (var groupList in groupList1)
                 {
@@ -134,26 +137,26 @@ namespace GesprekPlanner_WebApi.Data
                 var groupList = new List<List<ApplicationUserGroup>>();
                 groupList.Add(new List<ApplicationUserGroup>
                 {
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 4),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 7)
+                    context.ApplicationUserGroups.First(g=>g.Id == 4),
+                    context.ApplicationUserGroups.First(g=>g.Id == 7)
                 });
                 groupList.Add(new List<ApplicationUserGroup>
                 {
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 5),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 2),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 7)
+                    context.ApplicationUserGroups.First(g=>g.Id == 5),
+                    context.ApplicationUserGroups.First(g=>g.Id == 2),
+                    context.ApplicationUserGroups.First(g=>g.Id == 7)
                 });
                 groupList.Add(new List<ApplicationUserGroup>
                 {
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 15),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 13),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 9),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 4)
+                    context.ApplicationUserGroups.First(g=>g.Id == 15),
+                    context.ApplicationUserGroups.First(g=>g.Id == 13),
+                    context.ApplicationUserGroups.First(g=>g.Id == 9),
+                    context.ApplicationUserGroups.First(g=>g.Id == 4)
                 });
                 groupList.Add(new List<ApplicationUserGroup>
                 {
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 9),
-                    context.ApplicationUserGroups.First(g=>g.ApplicationUserGroupId == 8)
+                    context.ApplicationUserGroups.First(g=>g.Id == 9),
+                    context.ApplicationUserGroups.First(g=>g.Id == 8)
                 });
 
                 for (int i = 0; i < startDates.Length; i++)
@@ -162,7 +165,7 @@ namespace GesprekPlanner_WebApi.Data
                     {
                         StartDate = startDates[i],
                         EndDate = endDates[i],
-                        School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
+                        School = schools.First(s => s.Name == "Ods Meester Aafjes")
                     };
                     context.ConversationPlanDates.Add(planDate);
                     foreach (var group in groupList[i])
@@ -200,7 +203,7 @@ namespace GesprekPlanner_WebApi.Data
                     Email = "schooladmin@email.com",
                     UserName = "SchoolAdminMa",
                     SecurityStamp = Guid.NewGuid().ToString("D"),
-                    School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
+                    School = schools.First(s => s.Name == "Ods Meester Aafjes")
                 };
                 schoolAdminMA.NormalizedEmail = schoolAdminMA.Email.ToUpper();
                 schoolAdminMA.NormalizedUserName = schoolAdminMA.UserName.ToUpper();
@@ -214,7 +217,7 @@ namespace GesprekPlanner_WebApi.Data
                     Email = "schooladmin@email.com",
                     UserName = "SchoolAdminOe",
                     SecurityStamp = Guid.NewGuid().ToString("D"),
-                    School = schools.First(s => s.SchoolName == "Obs Est")
+                    School = schools.First(s => s.Name == "Obs Est")
                 };
                 schoolAdminOE.NormalizedEmail = schoolAdminOE.Email.ToUpper();
                 schoolAdminOE.NormalizedUserName = schoolAdminOE.UserName.ToUpper();
@@ -229,7 +232,7 @@ namespace GesprekPlanner_WebApi.Data
                     UserName = "Leraar6b",
                     SecurityStamp = Guid.NewGuid().ToString("D"),
                     Group = context.ApplicationUserGroups.First(g => g.GroupName == "Groep 6b"),
-                    School = schools.First(s => s.SchoolName == "Ods Meester Aafjes")
+                    School = schools.First(s => s.Name == "Ods Meester Aafjes")
                 };
                 teacher.NormalizedEmail = teacher.Email.ToUpper();
                 teacher.NormalizedUserName = teacher.UserName.ToUpper();

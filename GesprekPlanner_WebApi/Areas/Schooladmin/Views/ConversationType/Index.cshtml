@@ -1,0 +1,68 @@
+@model List<List<GesprekPlanner_WebApi.Areas.Schooladmin.Models.ConversationTypeViewModels.ListConversationTypeViewModel>>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Schooladmin/Views/Shared/_Layout.cshtml";
+    var counter = 0;
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Maak een nieuw gesprekstype aan</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-md-2">
+                @Html.DisplayNameFor(model => model[0][0].ConversationName)
+            </th>
+            <th class="col-md-2">
+                @Html.DisplayNameFor(model => model[0][0].Duration)
+            </th>
+            <th class="col-md-2">
+                @Html.DisplayNameFor(model => model[0][0].Group)
+            </th>
+            <th class="col-md-2"></th>
+            <th class="col-md-2"></th>
+        </tr>
+    </thead>
+
+    @foreach (var items in Model)
+    {
+        var duration = items[0].Duration + " minuten";
+        var groupCountString = items.Count + " groepen";
+        <tbody>
+            <tr>
+                <th>
+                    @Html.DisplayFor(modelItem => items[0].ConversationName)
+                </th>
+                <th>
+                    @duration
+                </th>
+                <th>
+                    @groupCountString
+                </th>
+                <th>
+                    <a asp-action="Edit" asp-route-id="@items[0].Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="items[0].Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@items[0].Id">Delete</a>
+                </th>
+                <th>
+                    <i class="fa fa-arrow-down GroupToggler singleToggle"></i>
+                </th>
+            </tr>
+            @foreach (var item in items)
+            {
+                <tr class="GroupToggleThis" style="display:none">
+                    <td></td>
+                    <td></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Group)
+                    </td>
+                </tr>
+            }
+        </tbody>
+        counter++;
+    }
+</table>

@@ -3,7 +3,12 @@
     <!-- Sidebar Menu -->
     <ul class="sidebar-menu">
         <li class="header">HEADER</li>
-        <li><a href="#"><i class="fa fa-link"></i><span>Home</span></a></li>
+        @if (User.IsInRole("Eigenaar") || User.IsInRole("Schooladmin"))
+        {
+            <li><a asp-area="Admin" asp-controller="Home" asp-action="Index"><i class="fa fa-link"></i><span>Admin gebied</span></a></li>
+        }
+        <li><a asp-area="Teacher" asp-controller="Home" asp-action="Index"><i class="fa fa-link"></i><span>Home</span></a></li>
+        <li><hr/></li>
         <li class="treeview">
             <a href="#">
                 <i class="fa fa-group"></i> <span>Gesprekken</span>

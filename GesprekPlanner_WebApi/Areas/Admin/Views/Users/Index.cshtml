@@ -1,5 +1,6 @@
-﻿@using GesprekPlanner_WebApi.Models
-@model IEnumerable<GesprekPlanner_WebApi.Models.MinimalUser>
+﻿@using System.ComponentModel.DataAnnotations.Schema
+@using GesprekPlanner_WebApi.Models
+@model List<List<GesprekPlanner_WebApi.Models.MinimalUser>>
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
@@ -12,38 +13,67 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UserName)
+            <th class="col-md-3">
+                @Html.DisplayNameFor(model => model[0][0].UserName)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Group.GroupName)
+            <th class="col-md-2">
+                @Html.DisplayNameFor(model => model[0][0].Group)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
+            <th class="col-md-3">
+                @Html.DisplayNameFor(model => model[0][0].Email)
+            </th>
+            <th class="col-md-2">
+                @Html.DisplayNameFor(model => model[0][0].School)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var items in Model)
         {
+            string userCountString = string.Empty;
+            if (items.Count == 1)
+            {
+                userCountString = items.Count + " gebruiker";
+            }
+            else
+            {
+                userCountString = items.Count + " gebruikers";
+            }
+            <tbody>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Group.GroupName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    <a asp-area="Admin" asp-controller="Users" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-area="Admin" asp-controller="Users" asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-area="Admin" asp-controller="Users" asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
-                    <a asp-area="Admin" asp-controller="Users" asp-action="ResetPassword" asp-route-id="@item.Id">Wachtwoord resetten</a>
-                </td>
+                <th>
+                    @userCountString
+                </th>
+                <th></th>
+                <th></th>
+                <th class="col-md-3">
+                    @Html.DisplayFor(modelItem => items[0].School)
+                </th>
+                <th>
+                    <i class="fa fa-arrow-down GroupToggler singleToggle"></i>
+                </th>
             </tr>
+            @foreach (var item in items)
+            {
+                <tr class="GroupToggleThis" style="display:none">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Group)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@items[0].Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="items[0].Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@items[0].Id">Delete</a> |
+                        <a asp-action="ResetPassword" asp-route-id="@items[0].Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
         }
-    </tbody>
-</table>
+    </table>

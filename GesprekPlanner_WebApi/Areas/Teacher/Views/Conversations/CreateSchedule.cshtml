@@ -86,9 +86,9 @@
                         return;
                     }
                 });
-                $(this).hide();
+                //$(this).hide();
             });
-            $(this).hide();
+            //$(this).hide();
             $(".planConversations").show();
         });
         $(document).on("click", ".planConversations", function() {
@@ -98,20 +98,5 @@
                 });
             });
         });
-
-        $(document).on("click",
-            ".deleteSchedule",
-            function() {
-                var counter = 0;
-                var scheduleboxParent = $(this).parent().parent().parent();
-                console.log($(this).parent().parent().remove());
-                scheduleboxParent.find(".schedulebox").each(function() {
-                    $(this).find(".formid").attr("name", "[" + counter + "].FormId");
-                    $(this).find(".starttime").attr("name", "[" + counter + "].StartTime");
-                    $(this).find(".endtime").attr("name", "[" + counter + "].EndTime");
-                    counter++;
-                });
-            });
-
     </script>
 }

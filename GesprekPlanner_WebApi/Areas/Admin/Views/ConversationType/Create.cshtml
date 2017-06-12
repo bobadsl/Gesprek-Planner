@@ -36,6 +36,16 @@
                 <span asp-validation-for="SelectedGroups" class="text-danger"></span>
             </div>
         </div>
+        @if (User.IsInRole("Eigenaar"))
+        {
+            <div class="form-group">
+                <label asp-for="SelectedSchool" class="col-md-2 control-label"></label>
+                <div class="col-md-5">
+                    <select asp-for="SelectedSchool" class="form-control selectpicker" data-title="Niks geselecteerd" asp-items="@Model.Schools"></select>
+                    <span asp-validation-for="SelectedSchool" class="text-danger"></span>
+                </div>
+            </div>
+        }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Cre&euml;er" class="btn btn-default" />

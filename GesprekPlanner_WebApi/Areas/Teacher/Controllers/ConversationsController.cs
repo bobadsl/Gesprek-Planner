@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 
@@ -38,27 +39,29 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
         // GET: Teacher/Conversations
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Conversations.ToListAsync());
+            return View();
         }
         
         // GET: Teacher/Conversations/Create
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            if (!_context.ConversationPlanDateClaims.Any(pdc => pdc.Group == GetCurrentUser().Result.Group))
+            if (!_context.ConversationPlanDateClaims.Include(pdc => pdc.Group).Any(pdc => pdc.Group.Id == int.Parse(HttpContext.Session.GetString("Group"))))
             {
-                ViewData["error"] =
-                    "De schooladministrator heeft nog geen gespreksplanning gemaakt.";
+                ViewData["error"] = "De schooladministrator heeft nog geen gespreksplanning gemaakt.";
                 return View("Error");
             }
-            if (!_context.ConversationTypes.Any())
+            if (!_context.ConversationTypeClaims.Include(ctc => ctc.Group).Any(ctc => ctc.Group.Id == int.Parse(HttpContext.Session.GetString("Group"))))
             {
                 ViewData["error"] = "De schooladministrator heeft nog geen gesprekstypes aangemaakt.";
+                return View("Error");
             }
+            var tempUser = await GetCurrentUser();
+            var user = _context.Users.Include(u => u.Group).First(u => u.Id == tempUser.Id);
             var model = new CreateConversationViewModel();
             model.PlannableDates = new List<SelectListItem>();
             model.ConversationTypes = new List<SelectListItem>();
-            var conversationTypes = _context.ConversationTypes.ToList();
+            var conversationTypes = await _context.ConversationTypeClaims.Include(ctc => ctc.Group).Include(ctc => ctc.ConversationType).Where(ctc => ctc.Group == user.Group).Select(ctc => ctc.ConversationType).ToListAsync();
             foreach (var conversationType in conversationTypes)
             {
                 model.ConversationTypes.Add(new SelectListItem
@@ -70,8 +73,7 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
             }
             model.ConversationTypes[0].Selected = true;
 
-            var tempUser = await GetCurrentUser();
-            var user = _context.Users.Include(u => u.Group).First(u => u.Id == tempUser.Id);
+            
             var planDates = await _context.ConversationPlanDateClaims.Include(pdc => pdc.Group).Include(pdc => pdc.ConversationPlanDate).Where(pdc => pdc.Group == user.Group).ToListAsync();
             
             var counter = 1;
@@ -187,12 +189,13 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Controllers
                 return NotFound();
             }
             foreach (var schedule in schedules)
-            {//TODO: DateTieme needs to be the starttime
+            {//TODO: DateTime needs to be the starttime
+                if (!schedule.IsPlanned) continue;
                 var startTime = date.Add(TimeSpan.Parse(schedule.StartTime));
                 var endTime = date.Add(TimeSpan.Parse(schedule.EndTime));
                 var conversation = new Conversation();
                 conversation.ConversationType = conversationType;
-                conversation.Group = GetCurrentUser().Result.Group;
+                conversation.Group = _context.ApplicationUserGroups.First(g => g.Id == int.Parse(HttpContext.Session.GetString("Group")));
                 conversation.DateTime = startTime;
 
                 if (

@@ -8,11 +8,11 @@
         @foreach (var schedule in @Model)
         {
             <div class="schedulebox">
-                <input type="hidden" class="formid" name="[@counter].FormId" value="@counter" />
+                <input type="hidden" class="formid" name="[@counter].FormId" value="@counter"/>
                 <input type="hidden" class="starttime" name="[@counter].StartTime" value="@schedule.StartTime"/>
                 <input type="hidden" class="endtime" name="[@counter].EndTime" value="@schedule.EndTime"/>
-                <p>@schedule.StartTime t/m @schedule.EndTime <i class="fa fa-times red deleteSchedule"/>
-                </p>
+                <input type="checkbox" name="[@counter].IsPlanned" checked/>
+                <p>@schedule.StartTime t/m @schedule.EndTime</p>
             </div>
             counter++;
         }

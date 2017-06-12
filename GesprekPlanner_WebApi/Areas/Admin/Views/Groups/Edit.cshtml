@@ -1,4 +1,4 @@
-@model GesprekPlanner_WebApi.Models.ApplicationUserGroup
+@model GesprekPlanner_WebApi.Areas.Admin.Models.GroupsViewModels.CreateEditGroupViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,7 +12,7 @@
         <h4>Groep aanpassen</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="ApplicationUserGroupId" />
+    <input type="hidden" asp-for="Id" />
         <div class="form-group">
             <label asp-for="GroupName" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -20,6 +20,16 @@
                 <span asp-validation-for="GroupName" class="text-danger"></span>
             </div>
         </div>
+        @if (User.IsInRole("Eigenaar"))
+        {
+            <div class="form-group">
+                <label asp-for="SelectedSchool" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <select asp-for="SelectedSchool" asp-items="@Model.Schools" class="selectpicker"></select>
+                    <span asp-validation-for="SelectedSchool" class="text-danger"></span>
+                </div>
+            </div>
+        }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />

@@ -16,5 +16,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.ConversationTypeViewModels
         public int Duration { get; set; }
         [Display(Name="Groep")]
         public string Group { get; set; }
+        [Display(Name="School")]
+        public string SchoolName { get; set; }
     }
 }

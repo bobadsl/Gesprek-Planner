@@ -13,13 +13,13 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                 name: "ApplicationUserGroups",
                 columns: table => new
                 {
-                    ApplicationUserGroupId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     GroupName = table.Column<string>(maxLength: 30, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApplicationUserGroups", x => x.ApplicationUserGroupId);
+                    table.PrimaryKey("PK_ApplicationUserGroups", x => x.Id);
                 });
         }
 

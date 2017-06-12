@@ -1,0 +1,20 @@
+Bij gebruikers scholen laten zien met uitklappen van de gebruikers.
+
+Adminkant eerst school dan andere dingen school gerelateerd.
+
+SingleThings kunnen inklappen zonder iets te selecteren. x
+
+Datums moet data worden x
+
+Als leraar direct naar leraar gebied omleiden x
+
+Edit met groupen toevoegen/verwijderen moet gefixed worden
+
+Gespreksplantijden met scholen
+
+Leraargebied haalt dingen op van alle scholen
+
+Checkbox met welke tijden wel en niet goedzijn zodat de leraar snel de fout kan terug zetten
+
+BUG: Tijden worden niet opgeslagen
+BUG: Website denkt dat de begin datum eerder is dan de huidige datum

@@ -39,8 +39,8 @@
     }
     <div class="form-group">
         <label asp-for="Group" class="col-md-2 control-label"></label>
-        <div class="col-md-5 end">
-            <input asp-for="Group" class="form-control"/>
+        <div class="col-md-5">
+            <input asp-for="Group" class="form-control" placeholder="Selecteer eerst een school" disabled/>
             <span asp-validation-for="Group" class="text-danger"></span>
         </div>
     </div>
@@ -67,7 +67,7 @@
     </div>
 
     <div class="form-group">
-        <div class="col-md-offset-2 col-md-5 end">
+        <div class="col-md-offset-2 col-md-5">
             <button type="submit" class="btn btn-default">Register</button>
         </div>
     </div>
@@ -76,12 +76,33 @@
     <script src="~/lib/jquery-ui/jquery-ui.js"></script>
     <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.js"></script>
     <script>
-      $( function() {
-          var availableTags = @Html.Raw(Model.Groups);
-        $( "#Group" ).autocomplete({
-          source: availableTags
+    var availableTags;
+        $("#Group").autocomplete({
+            source: availableTags,
+            
         });
-      } );
+
+        $("#SchoolName").on("change",
+            function() {
+
+                $.ajax({
+                    url: '@Url.Action("GetGroupsForSchool")',
+                    data: JSON.stringify({ school: $(this).val() }),
+                    contentType: 'application/json',
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        availableTags = data;
+                        $("#Group").val = "";
+                        $("#Group").prop("disabled", false);
+                        $("#Group").attr("placeholder", "Selecteer een group");
+                        $("#Group").autocomplete({
+                            source: availableTags
+                        });
+                    }
+                });
+            });
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

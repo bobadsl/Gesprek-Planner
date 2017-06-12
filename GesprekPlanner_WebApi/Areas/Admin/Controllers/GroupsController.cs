@@ -2,17 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GesprekPlanner_WebApi.Areas.Admin.Models.GroupsViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Eigenaar, Schooladmin")]
+    [Authorize(Roles = "Eigenaar")]
     public class GroupsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,7 +27,13 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         // GET: Admin/Groups
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ApplicationUserGroups.OrderBy(g => g.GroupName).ToListAsync());
+            return
+                View(
+                    await _context.ApplicationUserGroups
+                        .Include(g => g.School)
+                        .OrderBy(g => g.School.Name)
+                        .ThenBy(g => g.GroupName)
+                        .ToListAsync());
         }
 
         // GET: Admin/Groups/Details/5
@@ -37,7 +45,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             }
 
             var applicationUserGroup = await _context.ApplicationUserGroups
-                .SingleOrDefaultAsync(m => m.ApplicationUserGroupId == id);
+                .SingleOrDefaultAsync(m => m.Id == id);
             if (applicationUserGroup == null)
             {
                 return NotFound();
@@ -57,15 +65,21 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ApplicationUserGroupId,GroupName")] ApplicationUserGroup applicationUserGroup)
+        public async Task<IActionResult> Create(CreateEditGroupViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(applicationUserGroup);
+                var group = new ApplicationUserGroup
+                {
+                    GroupName=model.GroupName,
+                    School = _context.Schools.Single(s => s.Id == Guid.Parse(model.SelectedSchool)),
+                    EmailGroup = model.EmailGroup
+                }; 
+                _context.Add(group);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(applicationUserGroup);
+            return View(model);
         }
 
         // GET: Admin/Groups/Edit/5
@@ -76,12 +90,19 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var applicationUserGroup = await _context.ApplicationUserGroups.SingleOrDefaultAsync(m => m.ApplicationUserGroupId == id);
-            if (applicationUserGroup == null)
+            var group = await _context.ApplicationUserGroups.SingleOrDefaultAsync(m => m.Id == id);
+            if (group == null)
             {
                 return NotFound();
             }
-            return View(applicationUserGroup);
+            var model = new CreateEditGroupViewModel
+            {
+                Id = group.Id,
+                GroupName = group.GroupName,
+                Schools = new SelectList(_context.Schools.ToList(), "Id", "Name"),
+                EmailGroup = group.EmailGroup
+            };
+            return View(model);
         }
 
         // POST: Admin/Groups/Edit/5
@@ -89,23 +110,31 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ApplicationUserGroupId,GroupName")] ApplicationUserGroup applicationUserGroup)
+        public async Task<IActionResult> Edit(int id, CreateEditGroupViewModel model)
         {
-            if (id != applicationUserGroup.ApplicationUserGroupId)
+            if (id != model.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                var group = new ApplicationUserGroup
+                {
+                    GroupName = model.GroupName,
+                    Id = model.Id,
+                    School = _context.Schools.First(s => s.Id == Guid.Parse(model.SelectedSchool)),
+                    EmailGroup = model.EmailGroup
+                };
+
                 try
                 {
-                    _context.Update(applicationUserGroup);
+                    _context.Update(group);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ApplicationUserGroupExists(applicationUserGroup.ApplicationUserGroupId))
+                    if (!_context.ApplicationUserGroups.Any(g => g.Id == model.Id))
                     {
                         return NotFound();
                     }
@@ -117,7 +146,9 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            return View(applicationUserGroup);
+            model.Schools = new SelectList(_context.Schools.ToList(), "Id", "Name");
+
+            return View(model);
         }
 
         // GET: Admin/Groups/Delete/5
@@ -129,7 +160,11 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             }
 
             var applicationUserGroup = await _context.ApplicationUserGroups
-                .SingleOrDefaultAsync(m => m.ApplicationUserGroupId == id);
+                .SingleOrDefaultAsync(m => m.Id == id);
+            if (_context.Users.Include(u => u.Group).Any(u => u.Group.Id == applicationUserGroup.Id))
+            {
+                return View("Error");
+            }
             if (applicationUserGroup == null)
             {
                 return NotFound();
@@ -143,7 +178,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var applicationUserGroup = _context.ApplicationUserGroups.SingleOrDefault(m => m.ApplicationUserGroupId == id);
+            var applicationUserGroup = _context.ApplicationUserGroups.SingleOrDefault(m => m.Id == id);
             if (_context.Users.Any(u => u.Group == applicationUserGroup))
             {
                 ViewData["Error"] = "Kan deze groep niet verwijderen. Er bestaat al een gebruiker met deze groep";
@@ -152,11 +187,6 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             _context.ApplicationUserGroups.Remove(applicationUserGroup);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
-        }
-
-        private bool ApplicationUserGroupExists(int id)
-        {
-            return _context.ApplicationUserGroups.Any(e => e.ApplicationUserGroupId == id);
         }
     }
 }

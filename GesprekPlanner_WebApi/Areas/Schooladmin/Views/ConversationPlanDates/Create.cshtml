@@ -1,0 +1,92 @@
+@model GesprekPlanner_WebApi.Areas.Schooladmin.Models.ConversationPlanDateViewModels.CreateConversationPlanDateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Areas/Schooladmin/Views/Shared/_Layout.cshtml";
+}
+@section Styles{
+    <link rel="stylesheet" href="~/lib/jquery-ui/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.css" />
+}
+<h2>Create</h2>
+
+<form asp-action="Create">
+    <div class="form-horizontal">
+        <h4>ConversationPlanDate</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="StartDate" class="col-md-2 control-label"></label>
+            <div class="col-md-5">
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="EndDate" class="col-md-2 control-label"></label>
+            <div class="col-md-5">
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="SelectedGroups" class="col-md-2 control-label"></label>
+            <div class="col-md-5">
+                <select asp-for="SelectedGroups" class="form-control selectpicker" data-title="Niks geselecteerd" multiple asp-items="@Model.Groups"></select>
+                <span asp-validation-for="SelectedGroups" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Plan" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.js"></script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+<script type="text/javascript">
+        $(function () {
+            var dateFormat = "dd-mm-yy",
+                from = $("#StartDate")
+                    .datepicker({
+                        changeMonth: true,
+                        dateFormat: "dd-mm-yy",
+                        minDate: -0,
+                        showWeek: true,
+                        firstDay: 1
+                    })
+                    .on("change", function () {
+                        to.datepicker("option", "minDate", getDate(this));
+                    }),
+                to = $("#EndDate").datepicker({
+                    changeMonth: true,
+                    dateFormat: "dd-mm-yy",
+                    showWeek: true,
+                    firstDay: 1
+                })
+                    .on("change", function () {
+                        from.datepicker("option", "maxDate", getDate(this));
+                    });
+
+            function getDate(element) {
+                var date;
+                try {
+                    date = $.datepicker.parseDate(dateFormat, element.value);
+                } catch (error) {
+                    date = null;
+                }
+
+                return date;
+            }
+        });
+</script>
+}
+

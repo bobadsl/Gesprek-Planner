@@ -11,5 +11,6 @@ namespace GesprekPlanner_WebApi.Models
     {
         public virtual ApplicationUserGroup Group { get; set; }
         public virtual School School { get; set; }
+        public bool IsInMailGroup { get; set; }
     }
 }

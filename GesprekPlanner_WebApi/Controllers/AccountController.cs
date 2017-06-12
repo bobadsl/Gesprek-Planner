@@ -76,19 +76,40 @@ namespace GesprekPlanner_WebApi.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    Guid school;
-                    var user = _context.Users.First(u => u.UserName == model.Username);
-                    if (_userManager.IsInRoleAsync(user, "Eigenaar").Result)
+                    string school, group;
+                    var user = _context.Users.Include(u => u.Group).Include(u => u.School).First(u => u.UserName == model.Username);
+                    if (_userManager.IsInRoleAsync(user, "Eigenaar").Result ||
+                        _userManager.IsInRoleAsync(user, "Schooladmin").Result)
                     {
-                        school = new Guid();
+                        school = new Guid().ToString();
+                        group = "";
                     }
                     else
                     {
-                        school = _context.Users.Include(u => u.School).SingleOrDefault(u => u.UserName == model.Username).School.Id;
+                        school = user.School.Id.ToString();
+                        group = user.Group.Id.ToString();
                     }
+                      
                     
-                    HttpContext.Session.SetString("School", school.ToString());
+                    HttpContext.Session.SetString("School", school);
+                    HttpContext.Session.SetString("Group", group);
                     _logger.LogInformation(1, "User logged in.");
+                    if (returnUrl != null)
+                    {
+                        return RedirectToLocal(returnUrl);
+                    }
+                    if (_userManager.IsInRoleAsync(user, "Eigenaar").Result)
+                    {
+                        return RedirectToLocal("/Admin");
+                    }
+                    if (_userManager.IsInRoleAsync(user, "Schooladmin").Result)
+                    {
+                        return RedirectToLocal("/SchoolAdmin");
+                    }
+                    if (_userManager.IsInRoleAsync(user, "Leraar").Result)
+                    {
+                        return RedirectToLocal("/Teacher");
+                    }
                     return RedirectToLocal(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

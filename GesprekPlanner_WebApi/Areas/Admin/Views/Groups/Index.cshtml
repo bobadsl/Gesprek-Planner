@@ -8,14 +8,18 @@
 <h2>Index</h2>
 
 <p>
-    <a asp-action="Create">Cre&euml;er nieuwe groep</a>
+    <a asp-action="Create">Maak nieuwe groep aan</a>
 </p>
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.GroupName)
-                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GroupName)
+            </th>
+            @if (User.IsInRole("Eigenaar"))
+            {
+                <th>@Html.DisplayNameFor(model => model.School)</th>
+            }
             <th></th>
         </tr>
     </thead>
@@ -25,10 +29,14 @@
             <td>
                 @Html.DisplayFor(modelItem => item.GroupName)
             </td>
+            @if (User.IsInRole("Eigenaar"))
+            {
+                <td>@Html.DisplayFor(modelItem => item.School)</td>
+            }
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ApplicationUserGroupId">Aanpassen</a> |
-                <a asp-action="Details" asp-route-id="@item.ApplicationUserGroupId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ApplicationUserGroupId">Verwijderen</a>
+                <a asp-action="Edit" asp-route-id="@item.Id">Aanpassen</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Verwijderen</a>
             </td>
         </tr>
 }

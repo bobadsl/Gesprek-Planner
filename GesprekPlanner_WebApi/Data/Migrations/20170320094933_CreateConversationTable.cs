@@ -15,7 +15,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     ConversationTypeId = table.Column<int>(nullable: true),
                     DateTime = table.Column<DateTime>(nullable: false),
-                    GroupApplicationUserGroupId = table.Column<int>(nullable: true),
+                    GroupId = table.Column<int>(nullable: true),
                     IsChosen = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -28,10 +28,10 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Conversations_ApplicationUserGroups_GroupApplicationUserGroupId",
-                        column: x => x.GroupApplicationUserGroupId,
+                        name: "FK_Conversations_ApplicationUserGroups_GroupId",
+                        column: x => x.GroupId,
                         principalTable: "ApplicationUserGroups",
-                        principalColumn: "ApplicationUserGroupId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -41,9 +41,9 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                 column: "ConversationTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Conversations_GroupApplicationUserGroupId",
+                name: "IX_Conversations_GroupId",
                 table: "Conversations",
-                column: "GroupApplicationUserGroupId");
+                column: "GroupId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

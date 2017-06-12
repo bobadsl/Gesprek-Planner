@@ -1,0 +1,59 @@
+<!-- sidebar: style can be found in sidebar.less -->
+<section class="sidebar">
+    <!-- Sidebar Menu -->
+    <ul class="sidebar-menu">
+        <li><a asp-area="Teacher" asp-controller="Home" asp-action="Index"><i class="fa fa-link"></i><span>Leraar gebied</span></a></li>
+        <li><a asp-area="Schooladmin" asp-controller="Home" asp-action="Index"><i class="fa fa-link"></i><span>Home</span></a></li>
+        <li><hr /></li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-group"></i> <span>Gebruikers</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a asp-area="Schooladmin" asp-controller="Users" asp-action="Index">Gebruikers</a></li>
+                <li><a asp-area="Schooladmin" asp-controller="Users" asp-action="Register">Nieuwe gebruiker</a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-link"></i> <span>Groepen</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a asp-area="Schooladmin"asp-controller="Groups" asp-action="Index">Groepen</a></li>
+                <li><a asp-area="Schooladmin"asp-controller="Groups" asp-action="Create">Cre&euml;er nieuwe groep</a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-link"></i> <span>Gesprekstypes</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a asp-area="Schooladmin" asp-controller="ConversationType" asp-action="Index">Gesprekstypes</a></li>
+                <li><a asp-area="Schooladmin" asp-controller="ConversationType" asp-action="Create">Cre&euml;er nieuw gesprekstype</a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-link"></i> <span>Gespreksdata</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a asp-area="Schooladmin" asp-controller="ConversationPlanDates" asp-action="Index">Gespreksdata</a></li>
+                <li><a asp-area="Schooladmin" asp-controller="ConversationPlanDates" asp-action="Create">Cre&euml;er nieuw gespreksplanning</a></li>
+            </ul>
+        </li>
+    </ul>
+    <!-- /.sidebar-menu -->
+</section>
+<!-- /.sidebar -->

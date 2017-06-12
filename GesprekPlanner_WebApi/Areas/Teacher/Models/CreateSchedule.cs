@@ -19,8 +19,9 @@ namespace GesprekPlanner_WebApi.Areas.Teacher.Models
         [Required]
         public int ConversationType { get; set; }
         public DateTime Date { get; set; }
-
+        public bool IsPlanned { get; set; }
         public string Error { get; private set; }
+
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

@@ -31,6 +31,9 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.UsersViewModels
 
         public string Groups { get; set; } // This is a Json string
 
+        [Display(Name = "Lid van mailgroep?")]
+        public bool IsInMailGroup { get; set; }
+
 
         [Required]
         [Display(Name="Functie")]

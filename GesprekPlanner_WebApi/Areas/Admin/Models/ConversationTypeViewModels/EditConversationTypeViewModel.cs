@@ -21,5 +21,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Models.ConversationTypeViewModels
         [Required]
         public List<int> SelectedGroups { get; set; }
         public IEnumerable<SelectListItem> Groups { get; set; }
+        public Guid School { get; set; }
+        public IEnumerable<SelectListItem> Schools { get; set; }
     }
 }

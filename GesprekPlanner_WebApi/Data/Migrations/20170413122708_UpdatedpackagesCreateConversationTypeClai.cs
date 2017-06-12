@@ -24,7 +24,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ConversationTypeId = table.Column<int>(nullable: true),
-                    GroupApplicationUserGroupId = table.Column<int>(nullable: true)
+                    GroupId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -36,10 +36,10 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ConversationTypeClaims_ApplicationUserGroups_GroupApplicationUserGroupId",
-                        column: x => x.GroupApplicationUserGroupId,
+                        name: "FK_ConversationTypeClaims_ApplicationUserGroups_GroupId",
+                        column: x => x.GroupId,
                         principalTable: "ApplicationUserGroups",
-                        principalColumn: "ApplicationUserGroupId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -55,9 +55,9 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                 column: "ConversationTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ConversationTypeClaims_GroupApplicationUserGroupId",
+                name: "IX_ConversationTypeClaims_GroupId",
                 table: "ConversationTypeClaims",
-                column: "GroupApplicationUserGroupId");
+                column: "GroupId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

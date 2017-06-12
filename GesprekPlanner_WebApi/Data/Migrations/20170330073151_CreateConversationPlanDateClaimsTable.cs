@@ -9,15 +9,15 @@ namespace GesprekPlanner_WebApi.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_ConversationPlanDates_ApplicationUserGroups_GroupApplicationUserGroupId",
+                name: "FK_ConversationPlanDates_ApplicationUserGroups_GroupId",
                 table: "ConversationPlanDates");
 
             migrationBuilder.DropIndex(
-                name: "IX_ConversationPlanDates_GroupApplicationUserGroupId",
+                name: "IX_ConversationPlanDates_GroupId",
                 table: "ConversationPlanDates");
 
             migrationBuilder.DropColumn(
-                name: "GroupApplicationUserGroupId",
+                name: "GroupId",
                 table: "ConversationPlanDates");
 
             migrationBuilder.DropColumn(
@@ -30,7 +30,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     ConversationPlanDateId = table.Column<int>(nullable: true),
-                    GroupApplicationUserGroupId = table.Column<int>(nullable: true)
+                    GroupId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -42,10 +42,10 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ConversationPlanDateClaims_ApplicationUserGroups_GroupApplicationUserGroupId",
-                        column: x => x.GroupApplicationUserGroupId,
+                        name: "FK_ConversationPlanDateClaims_ApplicationUserGroups_GroupId",
+                        column: x => x.GroupId,
                         principalTable: "ApplicationUserGroups",
-                        principalColumn: "ApplicationUserGroupId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -55,9 +55,9 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                 column: "ConversationPlanDateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ConversationPlanDateClaims_GroupApplicationUserGroupId",
+                name: "IX_ConversationPlanDateClaims_GroupId",
                 table: "ConversationPlanDateClaims",
-                column: "GroupApplicationUserGroupId");
+                column: "GroupId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -66,7 +66,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                 name: "ConversationPlanDateClaims");
 
             migrationBuilder.AddColumn<int>(
-                name: "GroupApplicationUserGroupId",
+                name: "GroupId",
                 table: "ConversationPlanDates",
                 nullable: false,
                 defaultValue: 0);
@@ -78,16 +78,16 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                 defaultValue: 0);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ConversationPlanDates_GroupApplicationUserGroupId",
+                name: "IX_ConversationPlanDates_GroupId",
                 table: "ConversationPlanDates",
-                column: "GroupApplicationUserGroupId");
+                column: "GroupId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ConversationPlanDates_ApplicationUserGroups_GroupApplicationUserGroupId",
+                name: "FK_ConversationPlanDates_ApplicationUserGroups_GroupId",
                 table: "ConversationPlanDates",
-                column: "GroupApplicationUserGroupId",
+                column: "GroupId",
                 principalTable: "ApplicationUserGroups",
-                principalColumn: "ApplicationUserGroupId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
     }

@@ -73,14 +73,14 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
             modelBuilder.Entity("GesprekPlanner_WebApi.Models.ApplicationUserGroup", b =>
                 {
-                    b.Property<int>("ApplicationUserGroupId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("GroupName")
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.HasKey("ApplicationUserGroupId");
+                    b.HasKey("Id");
 
                     b.ToTable("ApplicationUserGroups");
                 });

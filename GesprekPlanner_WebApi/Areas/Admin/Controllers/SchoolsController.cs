@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GesprekPlanner_WebApi.Areas.Admin.Models.SchoolsViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
@@ -16,10 +20,12 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
     public class SchoolsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHostingEnvironment _environment;
 
-        public SchoolsController(ApplicationDbContext context)
+        public SchoolsController(ApplicationDbContext context, IHostingEnvironment environment)
         {
-            _context = context;    
+            _context = context;
+            _environment = environment;
         }
 
         // GET: Admin/Schools
@@ -55,18 +61,34 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         // POST: Admin/Schools/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost()]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,SchoolName,SchoolUrl,SchoolTelephone,SchoolEmail,SchoolStreet,SchoolPostCode,SchoolLogo")] School school)
+        public async Task<IActionResult> Create(CreateSchoolViewModel createSchool)
         {
             if (ModelState.IsValid)
             {
-                school.Id = Guid.NewGuid();
+                School school = new School
+                {
+                    Id = Guid.NewGuid(),
+                    Street = createSchool.SchoolStreet,
+                    Telephone = createSchool.SchoolTelephone,
+                    PostCode = createSchool.SchoolPostCode,
+                    Url = createSchool.SchoolUrl,
+                    Name = createSchool.SchoolName,
+                    Email = createSchool.SchoolEmail
+                };
+
+                if (createSchool.SchoolLogo.Length > 0)
+                {
+                    var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+                    await createSchool.SchoolLogo.CopyToAsync(new FileStream(Path.Combine(uploads, createSchool.SchoolLogo.FileName), FileMode.Create));
+                    school.Logo = Path.Combine(uploads, createSchool.SchoolLogo.FileName);
+                }
                 _context.Add(school);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(school);
+            return View(createSchool);
         }
 
         // GET: Admin/Schools/Edit/5
@@ -82,6 +104,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+            var model = new CreateSchoolViewModel();
             return View(school);
         }
 
@@ -90,7 +113,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,SchoolName,SchoolUrl,SchoolTelephone,SchoolEmail,SchoolStreet,SchoolPostCode,SchoolLogo")] School school)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,SchoolUrl,SchoolTelephone,SchoolEmail,SchoolStreet,SchoolPostCode,SchoolLogo")] School school)
         {
             if (id != school.Id)
             {

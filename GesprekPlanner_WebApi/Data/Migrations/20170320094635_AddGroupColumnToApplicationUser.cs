@@ -9,36 +9,36 @@ namespace GesprekPlanner_WebApi.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "GroupApplicationUserGroupId",
+                name: "GroupId",
                 table: "AspNetUsers",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_GroupApplicationUserGroupId",
+                name: "IX_AspNetUsers_GroupId",
                 table: "AspNetUsers",
-                column: "GroupApplicationUserGroupId");
+                column: "GroupId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_ApplicationUserGroups_GroupApplicationUserGroupId",
+                name: "FK_AspNetUsers_ApplicationUserGroups_GroupId",
                 table: "AspNetUsers",
-                column: "GroupApplicationUserGroupId",
+                column: "GroupId",
                 principalTable: "ApplicationUserGroups",
-                principalColumn: "ApplicationUserGroupId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUsers_ApplicationUserGroups_GroupApplicationUserGroupId",
+                name: "FK_AspNetUsers_ApplicationUserGroups_GroupId",
                 table: "AspNetUsers");
 
             migrationBuilder.DropIndex(
-                name: "IX_AspNetUsers_GroupApplicationUserGroupId",
+                name: "IX_AspNetUsers_GroupId",
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(
-                name: "GroupApplicationUserGroupId",
+                name: "GroupId",
                 table: "AspNetUsers");
         }
     }

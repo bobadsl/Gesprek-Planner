@@ -23,6 +23,9 @@
             <th class="col-md-2">
                 @Html.DisplayNameFor(model => model[0][0].Group)
             </th>
+            <th class="col-md-2">
+                @Html.DisplayNameFor(model => model[0][0].SchoolName)
+            </th>
             <th class="col-md-2"></th>
             <th class="col-md-2"></th>
         </tr>
@@ -42,6 +45,9 @@
                 </th>
                 <th>
                     @groupCountString
+                </th>
+                <th class="col-md-2">
+                    @Html.DisplayFor(modelItem => items[0].SchoolName)
                 </th>
                 <th>
                     <a asp-action="Edit" asp-route-id="@items[0].Id">Edit</a> |

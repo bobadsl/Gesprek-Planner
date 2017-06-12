@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Eigenaar, Schooladmin")]
+    [Authorize(Roles = "Eigenaar")]
     public class ConversationPlanDatesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -27,14 +27,18 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var plannedDates =
-                await _context.ConversationPlanDateClaims.Include(pdc => pdc.ConversationPlanDate).Include(pdc => pdc.Group).OrderBy(pdc => pdc.ConversationPlanDate.StartDate).ThenBy(pdc => pdc.ConversationPlanDate.EndDate).GroupBy(pdc => pdc.ConversationPlanDate).ToListAsync();
+                await _context.ConversationPlanDateClaims.Include(pdc => pdc.ConversationPlanDate)
+                .Include(pdc => pdc.Group)
+                .OrderBy(pdc => pdc.ConversationPlanDate.StartDate)
+                .ThenBy(pdc => pdc.ConversationPlanDate.EndDate)
+                .GroupBy(pdc => pdc.ConversationPlanDate)
+                .ToListAsync();
             
             if (plannedDates != null)
             {
                 var datesList = new List<List<ConversationPlanDateViewModel>>();
                 foreach (var plannedDate in plannedDates)
                 {
-                    var temp = plannedDate.ToList();
                     var tempList = plannedDate.ToList().Select(pdc => new ConversationPlanDateViewModel
                     {
                         Id = pdc.ConversationPlanDate.Id,
@@ -72,7 +76,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         {
             CreateConversationPlanDateViewModel model = new CreateConversationPlanDateViewModel()
             {
-                Groups = new SelectList(_context.ApplicationUserGroups.OrderBy(g => g.GroupName).ToList(), "ApplicationUserGroupId", "GroupName"),
+                Groups = new SelectList(_context.ApplicationUserGroups.OrderBy(g => g.GroupName).ToList(), "Id", "GroupName"),
                 StartDate = DateTime.Now.ToString("dd-mm-yyyy"),
                 EndDate = DateTime.Now.AddDays(1).ToString("dd-mm-yyyy")
             };
@@ -98,7 +102,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 {
                     var conversationPlanDateClaim = new ConversationPlanDateClaim
                     {
-                        Group = _context.ApplicationUserGroups.First(g => g.ApplicationUserGroupId == group),
+                        Group = _context.ApplicationUserGroups.First(g => g.Id == group),
                         ConversationPlanDate = conversationPlanDate
                     };
                     _context.ConversationPlanDateClaims.Add(conversationPlanDateClaim);
@@ -106,7 +110,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            model.Groups = new SelectList(_context.ApplicationUserGroups.ToList(), "ApplicationUserGroupId", "GroupName");
+            model.Groups = new SelectList(_context.ApplicationUserGroups.ToList(), "Id", "GroupName");
             return View(model);
         }
 
@@ -140,11 +144,11 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 SelectListItem selectListItem = new SelectListItem
                 {
                     Text = group.GroupName,
-                    Value= group.ApplicationUserGroupId.ToString()
+                    Value= group.Id.ToString()
                 };
                 if (
                     conversationPlanDateClaimGroups.Any(
-                        pdcg => pdcg.ApplicationUserGroupId == group.ApplicationUserGroupId))
+                        pdcg => pdcg.Id == group.Id))
                 {
                     selectListItem.Selected = true;
                 }
@@ -162,52 +166,78 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EditConversationPlanDateViewModel editConversationPlanDate)
         {
-            if (!_context.ConversationPlanDates.Any())
-            {
-                return RedirectToAction("Create");
-            }
-            var conversationPlanDate = await _context.ConversationPlanDates.FirstAsync(cpd => cpd.Id == id);
-            if (conversationPlanDate == null)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                var conversationPlanDateClaims =
-                    await _context.ConversationPlanDateClaims
-                        .Where(pdc => pdc.ConversationPlanDate == conversationPlanDate)
-                        .Include(pdc => pdc.Group)
-                        .Include(pdc => pdc.ConversationPlanDate)
-                        .ToListAsync();
-                foreach (var selectedGroup in editConversationPlanDate.SelectedGroups)
-                {
-                    if (conversationPlanDateClaims.All(pdc => pdc.Group.ApplicationUserGroupId != selectedGroup))
-                    {
-                        _context.ConversationPlanDateClaims.Add(new ConversationPlanDateClaim
-                        {
-                            ConversationPlanDate = conversationPlanDate,
-                            Group =
-                                _context.ApplicationUserGroups.Single(g => g.ApplicationUserGroupId == selectedGroup)
-                        });
-                    }
-                }
-                foreach (var conversationPlanDateClaim in conversationPlanDateClaims)
-                {
-                    if (
-                        editConversationPlanDate.SelectedGroups.All(
-                            pdc => pdc != conversationPlanDateClaim.Group.ApplicationUserGroupId))
-                    {
-                        _context.ConversationPlanDateClaims.Remove(conversationPlanDateClaim);
-                    }
-                }
-                conversationPlanDate.StartDate = DateTime.ParseExact(editConversationPlanDate.StartDate, "dd-mm-yyyy", null);
-                conversationPlanDate.EndDate = DateTime.ParseExact(editConversationPlanDate.EndDate, "dd-mm-yyyy", null);
-                _context.Update(conversationPlanDate);
-                
-                await _context.SaveChangesAsync();   
-                return RedirectToAction("Index");
-            }
+//            if (!_context.ConversationPlanDates.Any())
+//            {
+//                return RedirectToAction("Create");
+//            }
+//            var conversationPlanDate = await _context.ConversationPlanDates.FirstAsync(cpd => cpd.Id == id);
+//            if (conversationPlanDate == null)
+//            {
+//                return NotFound();
+//            }
+//
+//            if (ModelState.IsValid)
+//            {
+//                var conversationPlanDateClaims =
+//                    await _context.ConversationPlanDateClaims
+//                        .Where(pdc => pdc.ConversationPlanDate == conversationPlanDate)
+//                        .Include(pdc => pdc.Group)
+//                        .Include(pdc => pdc.ConversationPlanDate)
+//                        .ToListAsync();
+//                var modelGroups = new List<ApplicationUserGroup>();
+//                foreach (var group in editConversationPlanDate.SelectedGroups)
+//                {
+//                    modelGroups.Add(_context.ApplicationUserGroups.First(g => g.Id == group));
+//                }
+//                var removeGroups = conversationPlanDateClaims.Select(pdc => pdc.Group).ToList().Except(modelGroups).ToList();
+//                foreach (var group in removeGroups)
+//                {
+//                    if (!_context.Conversations.Include(c => c.Group).Any(c => c.Group == group))
+//                    {
+//                        var conversationTypeClaim =
+//                            _context.ConversationTypeClaims.SingleOrDefault(ctc => ctc.ConversationType == conversationType && ctc.Group == group);
+//                        if (conversationTypeClaim != null) // It shouldn't be null but just incase
+//                            _context.ConversationTypeClaims.Remove(conversationTypeClaim);
+//                    }
+//                }
+//                var AddGroups = modelGroups.Except(conversationTypeClaimsGroups).ToList();
+//                foreach (var group in AddGroups)
+//                {
+//                    _context.ConversationTypeClaims.Add(new ConversationTypeClaim
+//                    {
+//                        ConversationType = conversationType,
+//                        Group = group
+//                    });
+//                }
+//
+//                foreach (var selectedGroup in editConversationPlanDate.SelectedGroups)
+//                {
+//                    if (conversationPlanDateClaims.All(pdc => pdc.Group.Id != selectedGroup))
+//                    {
+//                        _context.ConversationPlanDateClaims.Add(new ConversationPlanDateClaim
+//                        {
+//                            ConversationPlanDate = conversationPlanDate,
+//                            Group =
+//                                _context.ApplicationUserGroups.Single(g => g.Id == selectedGroup)
+//                        });
+//                    }
+//                }
+//                foreach (var conversationPlanDateClaim in conversationPlanDateClaims)
+//                {
+//                    if (
+//                        editConversationPlanDate.SelectedGroups.All(
+//                            pdc => pdc != conversationPlanDateClaim.Group.Id))
+//                    {
+//                        _context.ConversationPlanDateClaims.Remove(conversationPlanDateClaim);
+//                    }
+//                }
+//                conversationPlanDate.StartDate = DateTime.ParseExact(editConversationPlanDate.StartDate, "dd-mm-yyyy", null);
+//                conversationPlanDate.EndDate = DateTime.ParseExact(editConversationPlanDate.EndDate, "dd-mm-yyyy", null);
+//                _context.Update(conversationPlanDate);
+//                
+//                await _context.SaveChangesAsync();   
+//                return RedirectToAction("Index");
+//            }
             return View(editConversationPlanDate);
         }
 

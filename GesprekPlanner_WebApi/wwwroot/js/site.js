@@ -8,7 +8,6 @@ $(document).on("click",
     ".GroupToggler",
     function () {
         if ($(this).hasClass("multiToggle")) {
-            console.log("mul");
             $(this).parent().parent().parent().find(".GroupToggleThis").each(function () {
                 $(this).toggle();
             });
@@ -21,7 +20,15 @@ $(document).on("click",
             }
         }
         else if ($(this).hasClass("singleToggle")) {
-            console.log("Singlew");
+
+            if ($(this).hasClass("fa-arrow-up")) {
+                $(this).parent().parent().parent().find(".GroupToggleThis").each(function() {
+                    $(this).hide();
+                });
+                $(this).removeClass("fa-arrow-up");
+                $(this).addClass("fa-arrow-down");
+                return;
+            }
             $(this).parent().parent().parent().parent().find(".GroupToggleThis").each(function() {
                 $(this).hide();
             });

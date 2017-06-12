@@ -43,10 +43,18 @@ namespace GesprekPlanner_WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-//            if (IsDevelopment) { }
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+            if (IsDevelopment)
+            {
+                services.AddDbContext<ApplicationDbContext>(options => options
+                    .UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                    .EnableSensitiveDataLogging()
+                    );
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            }
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -57,7 +65,7 @@ namespace GesprekPlanner_WebApi
             services.AddSession(options =>
             {
                 // Set a short timeout for easy testing.
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.IdleTimeout = TimeSpan.FromDays(1);
                 options.CookieHttpOnly = true;
             });
 

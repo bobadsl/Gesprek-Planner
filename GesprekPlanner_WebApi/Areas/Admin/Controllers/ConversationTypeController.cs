@@ -10,11 +10,12 @@ using Microsoft.EntityFrameworkCore;
 using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Eigenaar, Schooladmin")]
+    [Authorize(Roles = "Eigenaar")]
     public class ConversationTypeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -27,24 +28,23 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         // GET: Admin/ConversationType
         public async Task<IActionResult> Index()
         {
-            var conversationTypeClaimList =
-                _context.ConversationTypeClaims.Include(ctc => ctc.Group)
-                    .Include(ctc => ctc.ConversationType)
-                    .ToList()
-                    .GroupBy(ctc => ctc.ConversationType);
-
+            var conversationTypeClaimList = _context.ConversationTypeClaims.Include(ctc => ctc.Group)
+                .Include(ctc => ctc.ConversationType)
+                .ThenInclude(ctc => ctc.School)
+                .ToList()
+                .GroupBy(ctc => ctc.ConversationType);
             if (conversationTypeClaimList != null)
             {
                 var claimList = new List<List<ListConversationTypeViewModel>>();
                 foreach (var conversationTypeClaim in conversationTypeClaimList)
                 {
-                    var temp = conversationTypeClaim.ToList();
                     var tempList = conversationTypeClaim.ToList().Select(ctc => new ListConversationTypeViewModel()
                     {
                         Id = ctc.ConversationType.Id,
                         ConversationName = ctc.ConversationType.ConversationName,
                         Duration = ctc.ConversationType.ConversationDuration,
-                        Group = ctc.Group.GroupName
+                        Group = ctc.Group.GroupName,
+                        SchoolName = ctc.ConversationType.School.Name
                     }).ToList();
                     claimList.Add(tempList);
                 }
@@ -58,10 +58,10 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction("Index");
             }
 
-            var conversationType = await _context.ConversationTypes
+            var conversationType = await _context.ConversationTypes.Include(ct => ct.School)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (conversationType == null)
             {
@@ -75,12 +75,19 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         public IActionResult Create()
         {
             var conversationTypeModel = new CreateConversationTypeViewModel();
-            var groups = _context.ApplicationUserGroups.OrderBy(g => g.GroupName).ToList();
+            
             conversationTypeModel.Groups = new List<SelectListItem>();
-            foreach (var group in groups)
+            var groups = _context.ApplicationUserGroups.Include(g => g.School).OrderBy(g => g.GroupName).GroupBy(g => g.School).ToList();
+            foreach (var groupList in groups)
             {
-                ((List<SelectListItem>)conversationTypeModel.Groups).Add(new SelectListItem{Text = group.GroupName, Value=group.ApplicationUserGroupId.ToString(), Selected = true});
+                var selectGroup = new SelectListGroup {Name = groupList.Key.Name, Disabled = false};
+                foreach (var group in groupList)
+                {
+                    ((List<SelectListItem>)conversationTypeModel.Groups).Add(new SelectListItem{Disabled = false, Group = selectGroup, Value = group.Id.ToString(), Text = group.GroupName});
+                }
+                //((List<SelectListItem>)conversationTypeModel.Groups).Add(new SelectListItem { Text = group.GroupName, Value = group.Id.ToString(), Selected = true });
             }
+            conversationTypeModel.Schools = new SelectList(_context.Schools.ToList(), "Id", "Name");
 
             return View(conversationTypeModel);
         }
@@ -99,21 +106,42 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                     ConversationName = createConversationType.Name,
                     ConversationDuration = createConversationType.Duration
                 };
+                if (User.IsInRole("Eigenaar") && HttpContext.Session.GetString("School") == null)
+                {
+                    conversationType.School =
+                        _context.Schools.First(s => s.Id == Guid.Parse(createConversationType.SelectedSchool));
+                }
+                else
+                {
+                    conversationType.School =
+                        _context.Schools.First(s => s.Id == Guid.Parse(HttpContext.Session.GetString("School")));
+                }
                 _context.Add(conversationType);
                 foreach (var group in createConversationType.SelectedGroups)
                 {
                     ConversationTypeClaim conversationTypeClaim = new ConversationTypeClaim
                     {
                         ConversationType = conversationType,
-                        Group = _context.ApplicationUserGroups.First(g => g.ApplicationUserGroupId == group)
+                        Group = _context.ApplicationUserGroups.First(g => g.Id == group)
                     };
                     _context.Add(conversationTypeClaim);
                 }
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            createConversationType.Groups = new SelectList(_context.ApplicationUserGroups.OrderBy(g => g.GroupName).ToList(),
-                "ApplicationUserGroupId", "GroupName");
+            createConversationType.Groups = new List<SelectListItem>();
+            var groups = _context.ApplicationUserGroups.Include(g => g.School).OrderBy(g => g.GroupName).GroupBy(g => g.School).ToList();
+            foreach (var groupList in groups)
+            {
+                var selectGroup = new SelectListGroup { Name = groupList.Key.Name, Disabled = false };
+                foreach (var group in groupList)
+                {
+                    ((List<SelectListItem>)createConversationType.Groups).Add(new SelectListItem { Disabled = false, Group = selectGroup, Value = group.Id.ToString(), Text = group.GroupName });
+                }
+                //((List<SelectListItem>)conversationTypeModel.Groups).Add(new SelectListItem { Text = group.GroupName, Value = group.Id.ToString(), Selected = true });
+            }
+            createConversationType.Schools = new SelectList(_context.Schools.ToList(), "Id", "Name");
+
             return View(createConversationType);
         }
 
@@ -125,25 +153,37 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var conversationType = await _context.ConversationTypes.SingleOrDefaultAsync(m => m.Id == id);
+            var conversationType = await _context.ConversationTypes.Include(ct => ct.School).SingleOrDefaultAsync(m => m.Id == id);
             if (conversationType == null)
             {
                 return NotFound();
             }
-            var groups = await
+            var selectedGroups = await
                 _context.ConversationTypeClaims.Include(ctc => ctc.Group)
                     .Include(ctc => ctc.ConversationType)
                     .Where(ctc => ctc.ConversationType.Id == id)
-                    .Select(ctc => ctc.Group.ApplicationUserGroupId).ToListAsync();
+                    .Select(ctc => ctc.Group.Id).ToListAsync();
             var editConversationType = new EditConversationTypeViewModel
             {
                 Id = id.Value,
                 Name = conversationType.ConversationName,
                 Duration = conversationType.ConversationDuration,
-                SelectedGroups = groups,
-                Groups = new SelectList(_context.ApplicationUserGroups.OrderBy(g => g.GroupName).ToList(),
-                "ApplicationUserGroupId", "GroupName")
+                SelectedGroups = selectedGroups,
+                School = conversationType.School.Id
             };
+            editConversationType.Groups = new List<SelectListItem>();
+            var groups = _context.ApplicationUserGroups.Include(g => g.School).OrderBy(g => g.GroupName).GroupBy(g => g.School).ToList();
+            foreach (var groupList in groups)
+            {
+                var selectGroup = new SelectListGroup { Name = groupList.Key.Name, Disabled = false };
+                foreach (var group in groupList)
+                {
+                    ((List<SelectListItem>)editConversationType.Groups).Add(new SelectListItem { Disabled = false, Group = selectGroup, Value = group.Id.ToString(), Text = group.GroupName });
+                }
+                //((List<SelectListItem>)conversationTypeModel.Groups).Add(new SelectListItem { Text = group.GroupName, Value = group.Id.ToString(), Selected = true });
+            }
+            editConversationType.Schools = new SelectList(_context.Schools.ToList(), "Id", "Name");
+
             return View(editConversationType);
         }
 
@@ -152,15 +192,63 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditConversationTypeViewModel editConversationType)
+        public async Task<IActionResult> Edit(int id, EditConversationTypeViewModel model)
         {
-            if (id != editConversationType.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                var origionalConversationType = _context.ConversationTypes.First(ct => ct.Id == id);
+                var conversationType = new ConversationType
+                {
+                    Id = model.Id,
+                    ConversationName = model.Name
+                };
+                if (
+                    !_context.Conversations.Include(c => c.ConversationType)
+                        .Any(cpd => cpd.ConversationType.Id == id))
+                {
+                    conversationType.ConversationDuration = model.Duration;
+                    conversationType.School = _context.Schools.First(s => s.Id == model.School);
+                }
+                var conversationTypeClaimsGroups =
+                    _context.ConversationTypeClaims.Include(ctc => ctc.Group)
+                        .Include(ctc => ctc.ConversationType)
+                        .Where(ctc => ctc.ConversationType.Id == id)
+                        .Select(ctc => ctc.Group)
+                        .ToList();
+
+                List<ApplicationUserGroup> modelGroups = new List<ApplicationUserGroup>();
+                foreach (var selectedGroup in model.SelectedGroups)
+                {
+                    modelGroups.Add(_context.ApplicationUserGroups.First(g => g.Id == selectedGroup));
+                }
+
+                var removeGroups = conversationTypeClaimsGroups.Except(modelGroups).ToList();
+                foreach (var group in removeGroups)
+                {
+                    if (!_context.Conversations.Include(c => c.ConversationType).Include(c => c.Group).Any(c => c.Group == group && c.ConversationType == origionalConversationType))
+                    {
+                        var conversationTypeClaim =
+                            _context.ConversationTypeClaims.SingleOrDefault(ctc => ctc.ConversationType == origionalConversationType && ctc.Group == group);
+                        if (conversationTypeClaim != null) // It shouldn't be null but just incase
+                            _context.ConversationTypeClaims.Remove(conversationTypeClaim);
+                    }
+                }
+                var AddGroups = modelGroups.Except(conversationTypeClaimsGroups).ToList();
+                foreach (var group in AddGroups)
+                {
+                    _context.ConversationTypeClaims.Add(new ConversationTypeClaim
+                    {
+                        ConversationType = conversationType,
+                        Group = group
+                    });
+                }
+                _context.Update(conversationType);
+                await _context.SaveChangesAsync();
 //                try
 //                {
 //                    _context.Update(conversationType);
@@ -179,7 +267,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 //                }
 //                return RedirectToAction("Index");
             }
-            return View(editConversationType);
+            return View(model);
         }
 
         // GET: Admin/ConversationType/Delete/5
@@ -209,11 +297,6 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             _context.ConversationTypes.Remove(conversationType);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
-        }
-
-        private bool ConversationTypeExists(int id)
-        {
-            return _context.ConversationTypes.Any(e => e.Id == id);
         }
     }
 }

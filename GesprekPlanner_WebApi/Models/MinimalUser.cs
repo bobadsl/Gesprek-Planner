@@ -15,7 +15,11 @@ namespace GesprekPlanner_WebApi.Models
         [Display(Name = "Email")]
         public string Email { get; set; }
         [Display(Name="Groep")]
-        public ApplicationUserGroup Group { get; set; }
+        public string Group { get; set; }
+        [Display(Name ="School")]
+        public string School { get; set; }
+        [Display(Name = "Lid van mailgroep?")]
+        public bool IsInMailGroup { get; set; }
         [Display(Name = "Groepen")]
         public IEnumerable<ApplicationUserGroup> Groups { get; set; }
     }

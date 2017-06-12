@@ -29,7 +29,7 @@ namespace GesprekPlanner_WebApi.Controllers
         public async Task<IActionResult> ChangeTeacher(string returnUrl, int group)
         {
             var user = await GetCurrentUser();
-            user.Group = _context.ApplicationUserGroups.First(g => g.ApplicationUserGroupId == group);
+            user.Group = _context.ApplicationUserGroups.First(g => g.Id == group);
             return Redirect(returnUrl);
         }
 

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using GesprekPlanner_WebApi.Areas.Admin.Models;
+using GesprekPlanner_WebApi.Areas.Admin.Models.ConversationTypeViewModels;
 using GesprekPlanner_WebApi.Areas.Admin.Models.UsersViewModels;
 using GesprekPlanner_WebApi.Data;
 using GesprekPlanner_WebApi.Models;
@@ -21,112 +22,109 @@ using Newtonsoft.Json;
 namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Eigenaar, Schooladmin")]
+    [Authorize(Roles = "Eigenaar")]
     public class UsersController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public UsersController(ApplicationDbContext dbContect,
-          UserManager<ApplicationUser> userManager,
-          SignInManager<ApplicationUser> signInManager)
+          UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
-            _dbContext = dbContect;
-            _signInManager = signInManager;
+            _context = dbContect;
         }
         public IActionResult Index()
         {
-            List<MinimalUser> users;
-            if (User.IsInRole("Eigenaar"))
+            var users = _context.Users.Include(u => u.Group).Include(u => u.School).Select(item => new MinimalUser
             {
-                users = _dbContext.Users.Include(u => u.Group).Select(item => new MinimalUser
-                {
-                    Id = item.Id,
-                    UserName = item.UserName,
-                    Email = item.Email,
-                    Group = item.Group
-                }).ToList();
-            }
-            else
+                Id = item.Id,
+                UserName = item.UserName,
+                Email = item.Email,
+                Group = item.Group.GroupName,
+                School = item.School.Name
+            }).GroupBy(u => u.School).ToList();
+            var userList = new List<List<MinimalUser>>();
+            foreach (var user in users)
             {
-                users = _dbContext.Users.Include(u => u.Group).Where(u => u.School.Id == Guid.Parse(HttpContext.Session.GetString("School"))).Select(item => new MinimalUser
+                var tempList = user.ToList().Select(u => new MinimalUser()
                 {
-                    Id = item.Id,
-                    UserName = item.UserName,
-                    Email = item.Email,
-                    Group = item.Group
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    Email = u.Email,
+                    Group = u.Group,
+                    School = u.School
                 }).ToList();
+                userList.Add(tempList);
             }
-            return View(users);
+            return View(userList);
         }
 
         [HttpGet]
         public IActionResult Register()
         {
-            List<ApplicationUserGroup> groups;
-            var model = new RegisterNewUserViewModel();
-            if (User.IsInRole("Eigenaar"))
+            var schools = _context.Schools.ToList();
+            var model = new RegisterNewUserViewModel
             {
-                groups = _dbContext.ApplicationUserGroups.ToList();
-                model.Schools = new SelectList(_dbContext.Schools.ToList(), "SchoolName");
-            }
-            else
+                Schools = new List<SelectListItem>(),
+                Roles = new SelectList(_context.Roles.ToList(), "Name")
+            };
+            ((List<SelectListItem>)model.Schools).Add(new SelectListItem{Disabled = true, Selected = true, Text = "Selecteer een school"});
+            foreach (var school in schools)
             {
-                groups =
-                    _dbContext.ApplicationUserGroups.Where(
-                        u => u.School.Id == Guid.Parse(HttpContext.Session.GetString("School"))).ToList();
+                ((List<SelectListItem>)model.Schools).Add(new SelectListItem {Text = school.Name, Value=school.Id.ToString()});
             }
-            if (groups.Count == 0) return RedirectToAction("Create", "Groups");
-            model.Roles = new SelectList(_dbContext.Roles.ToList(), "Name");
-            model.Groups = JsonConvert.SerializeObject(groups.Select(g => g.GroupName).ToList());
+            if (!_context.ApplicationUserGroups.Any()) return RedirectToAction("Create", "Groups");
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Register(RegisterNewUserViewModel model)
+        public async Task<IActionResult> Register(RegisterNewUserViewModel model)
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user;
-                if (!_dbContext.ApplicationUserGroups.Where(u => u.School.Id == Guid.Parse(HttpContext.Session.GetString("School"))).Any(g => g.GroupName == model.Group))
+                var user = new ApplicationUser
                 {
-                    _dbContext.ApplicationUserGroups.Add(new ApplicationUserGroup { GroupName = model.Group });
-                    _dbContext.SaveChanges();
-                }
-                user = new ApplicationUser { UserName = model.Username, Email = model.Email, Group = _dbContext.ApplicationUserGroups.First(g => g.GroupName == model.Group) };
-                if (User.IsInRole("Eigenaar"))
-                {
-                    user.School =
-                        _dbContext.Schools.First(s => s.SchoolName == model.SchoolName);
-                }
-                var result = _userManager.CreateAsync(user, model.Password).Result;
+                    UserName = model.Username,
+                    Email = model.Email,
+                    Group = _context.ApplicationUserGroups.First(g => g.GroupName == model.Group),
+                    School = _context.Schools.First(s => s.Name == model.SchoolName),
+                    IsInMailGroup = model.IsInMailGroup
+                };
+
+                var result =  await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    _userManager.AddToRoleAsync(user, model.RoleName).GetAwaiter().GetResult();
+                   await _userManager.AddToRoleAsync(user, model.RoleName);
                 }
                 return RedirectToAction("Index");
             }
-            var groups = _dbContext.ApplicationUserGroups.ToList();
-            model.Roles = new SelectList(_dbContext.Roles.ToList(), "Name");
-            model.Groups = JsonConvert.SerializeObject(groups.Select(g => g.GroupName).ToList());
+            var schools = _context.Schools.ToList();
+
+            model.Schools = new List<SelectListItem>();
+            model.Roles = new SelectList(_context.Roles.ToList(), "Name");
+            ((List<SelectListItem>)model.Schools).Add(new SelectListItem { Disabled = true, Selected = true, Text = "Selecteer een school" });
+            foreach (var school in schools)
+            {
+                ((List<SelectListItem>)model.Schools).Add(new SelectListItem { Text = school.Name, Value = school.Id.ToString() });
+            }
             return View(model);
         }
 
         [HttpGet]
         public IActionResult Edit(string id)
         {
-            var query = from u in _dbContext.Users select u;
+            var query = from u in _context.Users select u;
             var user = query.AsEnumerable().Select(item => new MinimalUser
             {
                 Id = item.Id,
                 UserName = item.UserName,
                 Email = item.Email,
-                Group = item.Group
+                Group = item.Group.GroupName,
+                IsInMailGroup = item.IsInMailGroup
             }).First(item => item.Id == id);
 
-            var groups = _dbContext.ApplicationUserGroups.ToList();
+            var groups = _context.ApplicationUserGroups.ToList();
             user.Groups = groups;
             return View(user);
         }
@@ -135,13 +133,13 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(MinimalUser user)
         {
-            var dbUser = _dbContext.Users.First(u => u.Id == user.Id);
+            var dbUser = _context.Users.First(u => u.Id == user.Id);
             dbUser.Email = user.Email;
             dbUser.UserName = user.UserName;
             try
             {
-                _dbContext.Update(dbUser);
-                _dbContext.SaveChanges();
+                _context.Update(dbUser);
+                _context.SaveChanges();
             }
             catch
             {
@@ -153,7 +151,7 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult ResetPassword(string id)
         {
-            var query = from u in _dbContext.Users select u;
+            var query = from u in _context.Users select u;
             var user = query.AsEnumerable().Select(item => new ResetPasswordViewModel()
             {
                 Id = item.Id
@@ -185,5 +183,18 @@ namespace GesprekPlanner_WebApi.Areas.Admin.Controllers
             }
             return View(model);
         }
+
+        [HttpPost]
+        public string GetGroupsForSchool([FromBody]dynamic json)
+        {
+            Guid school = Guid.Parse(json.school.ToString());
+            return
+                JsonConvert.SerializeObject(
+                    _context.ApplicationUserGroups.Include(g => g.School)
+                        .Where(g => g.School.Id == school)
+                        .Select(g => g.GroupName).ToList());
+
+        }
+
     }
 }

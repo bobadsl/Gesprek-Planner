@@ -6,19 +6,21 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-    if (User.IsInRole("Eigenaar") || User.IsInRole("Schooladmin"))
-    {
-        <ul class="nav navbar-nav">
+    <ul class="nav navbar-nav">
+        @if (User.IsInRole("Eigenaar"))
+        {
             <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin gebied</a></li>
+        }
+        else if (User.IsInRole("Schooladmin"))
+        {
+            <li><a asp-area="Schooladmin" asp-controller="Home" asp-action="Index">Admin gebied</a></li>
+        }
+        else if (User.IsInRole("Leraar"))
+        {
             <li><a asp-area="Teacher" asp-controller="Home" asp-action="Index">Leraar gebied</a></li>
-        </ul>
-    }
-    else if (User.IsInRole("Leraar"))
-    {
-        <ul class="nav navbar-nav">
-            <li><a asp-area="Teacher" asp-controller="Home" asp-action="Index">Leraar gebied</a></li>
-        </ul>
-    }
+        }
+
+    </ul>
     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
             <li>

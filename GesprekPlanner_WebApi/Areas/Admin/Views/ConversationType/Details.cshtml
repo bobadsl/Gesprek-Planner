@@ -23,6 +23,15 @@
         <dd>
             @Html.DisplayFor(model => model.ConversationDuration) minuten
         </dd>
+        @if (User.IsInRole("Eigenaar"))
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.School.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.School.Name) minuten
+            </dd>
+        }
     </dl>
 </div>
 <div>

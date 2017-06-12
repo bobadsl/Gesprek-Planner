@@ -1,4 +1,4 @@
-@model GesprekPlanner_WebApi.Models.School
+@model School
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,54 +12,54 @@
         <h4>School</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Id" />
         <div class="form-group">
-            <label asp-for="SchoolName" class="col-md-2 control-label"></label>
+            <label asp-for="Name" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="SchoolName" class="form-control" />
-                <span asp-validation-for="SchoolName" class="text-danger"></span>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="SchoolUrl" class="col-md-2 control-label"></label>
+            <label asp-for="Url" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="SchoolUrl" class="form-control" />
-                <span asp-validation-for="SchoolUrl" class="text-danger"></span>
+                <input asp-for="Url" class="form-control" />
+                <span asp-validation-for="Url" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="SchoolTelephone" class="col-md-2 control-label"></label>
+            <label asp-for="Telephone" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="SchoolTelephone" class="form-control" />
-                <span asp-validation-for="SchoolTelephone" class="text-danger"></span>
+                <input asp-for="Telephone" class="form-control" />
+                <span asp-validation-for="Telephone" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="SchoolEmail" class="col-md-2 control-label"></label>
+            <label asp-for="Email" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="SchoolEmail" class="form-control" />
-                <span asp-validation-for="SchoolEmail" class="text-danger"></span>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="SchoolStreet" class="col-md-2 control-label"></label>
+            <label asp-for="Street" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="SchoolStreet" class="form-control" />
-                <span asp-validation-for="SchoolStreet" class="text-danger"></span>
+                <input asp-for="Street" class="form-control" />
+                <span asp-validation-for="Street" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="SchoolPostCode" class="col-md-2 control-label"></label>
+            <label asp-for="PostCode" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="SchoolPostCode" class="form-control" />
-                <span asp-validation-for="SchoolPostCode" class="text-danger"></span>
+                <input asp-for="PostCode" class="form-control" />
+                <span asp-validation-for="PostCode" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="SchoolLogo" class="col-md-2 control-label"></label>
+            <label asp-for="Logo" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="SchoolLogo" class="form-control" />
-                <span asp-validation-for="SchoolLogo" class="text-danger"></span>
+                <input asp-for="Logo" />
+                <span asp-validation-for="Logo" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -74,3 +74,36 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Scripts{
+    <script type="text/javascript">
+
+        var _URL = window.URL || window.webkitURL;
+        $("#SchoolLogo").on("change",
+            function() {
+                console.log($(this).val());
+                var reg = /(.*)\.(jpg|gif|png|jpeg)$/i;
+                var ext = $(this).val().match(reg);
+                var valid = false;
+                if (ext != null) {
+                    var file, img;
+                    if ((file = this.files[0])) {
+                        img = new Image();
+                        img.onload = function() {
+                            if (this.width > 200 || this.height > 200) {
+                                alert("Picture is to big");
+                            } else {
+                                valid = true;
+                            }
+                        };
+                        if (valid) {
+                            img.src = _URL.createObjectURL(file);
+                        } else {
+                            $("#submit").disable();
+                        }
+                    }
+                } else {
+                    $(this).reset();
+                }
+            });
+    </script>
+}

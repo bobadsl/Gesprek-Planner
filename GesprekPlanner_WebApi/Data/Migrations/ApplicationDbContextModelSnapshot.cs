@@ -31,7 +31,9 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<int?>("GroupApplicationUserGroupId");
+                    b.Property<int?>("GroupId");
+
+                    b.Property<bool>("IsInMailGroup");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -60,7 +62,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupApplicationUserGroupId");
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -76,8 +78,10 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
             modelBuilder.Entity("GesprekPlanner_WebApi.Models.ApplicationUserGroup", b =>
                 {
-                    b.Property<int>("ApplicationUserGroupId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("EmailGroup");
 
                     b.Property<string>("GroupName")
                         .IsRequired()
@@ -85,7 +89,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.Property<Guid?>("SchoolId");
 
-                    b.HasKey("ApplicationUserGroupId");
+                    b.HasKey("Id");
 
                     b.HasIndex("SchoolId");
 
@@ -103,7 +107,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.Property<DateTime>("EndTime");
 
-                    b.Property<int?>("GroupApplicationUserGroupId");
+                    b.Property<int?>("GroupId");
 
                     b.Property<bool>("IsChosen");
 
@@ -113,7 +117,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.HasIndex("ConversationTypeId");
 
-                    b.HasIndex("GroupApplicationUserGroupId");
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("SchoolId");
 
@@ -145,13 +149,13 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.Property<int?>("ConversationPlanDateId");
 
-                    b.Property<int?>("GroupApplicationUserGroupId");
+                    b.Property<int?>("GroupId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ConversationPlanDateId");
 
-                    b.HasIndex("GroupApplicationUserGroupId");
+                    b.HasIndex("GroupId");
 
                     b.ToTable("ConversationPlanDateClaims");
                 });
@@ -183,13 +187,13 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.Property<int?>("ConversationTypeId");
 
-                    b.Property<int?>("GroupApplicationUserGroupId");
+                    b.Property<int?>("GroupId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ConversationTypeId");
 
-                    b.HasIndex("GroupApplicationUserGroupId");
+                    b.HasIndex("GroupId");
 
                     b.ToTable("ConversationTypeClaims");
                 });
@@ -199,19 +203,19 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("SchoolEmail");
+                    b.Property<string>("Email");
 
-                    b.Property<string>("SchoolLogo");
+                    b.Property<string>("Logo");
 
-                    b.Property<string>("SchoolName");
+                    b.Property<string>("Name");
 
-                    b.Property<string>("SchoolPostCode");
+                    b.Property<string>("PostCode");
 
-                    b.Property<string>("SchoolStreet");
+                    b.Property<string>("Street");
 
-                    b.Property<string>("SchoolTelephone");
+                    b.Property<string>("Telephone");
 
-                    b.Property<string>("SchoolUrl");
+                    b.Property<string>("Url");
 
                     b.HasKey("Id");
 
@@ -329,7 +333,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
                 {
                     b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
                         .WithMany()
-                        .HasForeignKey("GroupApplicationUserGroupId");
+                        .HasForeignKey("GroupId");
 
                     b.HasOne("GesprekPlanner_WebApi.Models.School", "School")
                         .WithMany()
@@ -351,7 +355,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
                         .WithMany()
-                        .HasForeignKey("GroupApplicationUserGroupId");
+                        .HasForeignKey("GroupId");
 
                     b.HasOne("GesprekPlanner_WebApi.Models.School", "School")
                         .WithMany()
@@ -373,7 +377,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
                         .WithMany()
-                        .HasForeignKey("GroupApplicationUserGroupId");
+                        .HasForeignKey("GroupId");
                 });
 
             modelBuilder.Entity("GesprekPlanner_WebApi.Models.ConversationType", b =>
@@ -391,7 +395,7 @@ namespace GesprekPlanner_WebApi.Data.Migrations
 
                     b.HasOne("GesprekPlanner_WebApi.Models.ApplicationUserGroup", "Group")
                         .WithMany()
-                        .HasForeignKey("GroupApplicationUserGroupId");
+                        .HasForeignKey("GroupId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
